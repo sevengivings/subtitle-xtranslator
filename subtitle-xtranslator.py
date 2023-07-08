@@ -32,7 +32,7 @@ def extract_audio_stable_whisper(model_name, device, audio_language, input_file_
 
     # Extract the audio from the video.
     model = stable_whisper.load_model(model_name, device=device)
-    result = model.transcribe(verbose=True, word_timestamps=False, language=audio_language, audio=input_file_name)
+    result = model.transcribe(verbose=True, word_timestamps=False, condition_on_previous_text=False, language=audio_language, audio=input_file_name)
     result.to_srt_vtt(output_file_name + ".srt", word_level=False)
 
 # Whisper 
@@ -117,9 +117,9 @@ def translate_text_papago(audio, target, text):
     try:
         client_id = os.environ['NAVER_CLOUD_ID'] 
         client_secret = os.environ['NAVER_CLIENT_SECRET'] 
-        print("[Info] Naver Papago will be used.")
+        print(_("[Info] Naver Papago will be used."))
     except KeyError:
-        print("[Error] Please set NAVER_CLOUD_ID and NAVER_CLIENT_SECRET environment variables.")
+        print(_("[Error] Please set NAVER_CLOUD_ID and NAVER_CLIENT_SECRET environment variables."))
         sys.exit(1)
         
     encText = urllib.parse.quote(text)
@@ -141,13 +141,13 @@ def translate_text_papago(audio, target, text):
         
         return translated_list
     else:
-        print("[Error] Request failed with status code:" + rescode)
+        print(_("[Error] Request failed with status code:") + rescode)
 
 # removes unnecessary short and repeated characters from the subtitle text and translate using Google Cloud Translate 
 def translate_file(audio_language, subtitle_language, translator, text_split_size, input_file_name, skip_textlength):
     # Check if the file exists.
     if not os.path.exists(input_file_name):
-        raise FileNotFoundError(f"[Error] The file {input_file_name} does not exist.")
+        raise FileNotFoundError(_("[Error] The file does not exist:") + input_file_name)
 
     # Open the input file.
     with open(input_file_name, "r", encoding="utf-8") as f:
@@ -206,14 +206,18 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
     current_list = [] 
     split_lists = []
     
+    # Google Cloud Translate only supports maximum text segments : 128 
+    num_of_segments = 0 
     for string in subtitle_text_list:
-        if current_length + len(string) <= text_split_size:
+        if current_length + len(string) <= text_split_size and num_of_segments < 127:
             current_list.append(string)
             current_length += len(string)
+            num_of_segments += 1
         else:
             split_lists.append(current_list)
             current_list = [string]
             current_length = len(string)
+            num_of_segments = 0
         
         total_length += len(string)
 
@@ -227,9 +231,9 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
             google_api_key = ""
             try: 
                 google_api_key = os.environ['GOOGLE_API_KEY']
-                print("[Info] Using Google Cloud Translate")
+                print(_("[Info] Using Google Cloud Translate"))
             except KeyError:
-                print("[Info] Using Google Cloud Translate (ADC)")    
+                print(_("[Info] Using Google Cloud Translate (ADC)"))    
                         
             if google_api_key != "": 
                 result = translate_text_apikey(subtitle_language, split_list)
@@ -243,7 +247,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
             result = translate_text_papago(audio_language, subtitle_language, string)            
         
         text_translated_list_all.append(translated_list)
-        print(f"[Info] {len(split_list)} sentences translated") 
+        print(_("[Info] number of sentences translated: "), len(translated_list)) 
     
     # Save the subtitle text to a new file.
     # create a new file with the same name as the input file, consider file name contains multiple '.' 
@@ -261,23 +265,21 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                 i += 1                 
     
     # Print the total_length
-    print("\n[Info] Number of characters: ", total_length)
+    print(_("\n[Info] Number of characters: "), total_length)
     
     if len(deleted_subtitle_text) > 0:
-        print("[Info]Number of short subtitles: ", deleted_line)          
+        print(_("[Info]Number of short subtitles: "), deleted_line)          
         output_file_name = input_file_name.rsplit(".", 1)[0] 
         with open(output_file_name + "_deleted.txt", "w", encoding="utf-8") as f3:
             for text in deleted_subtitle_text:
                 f3.write(text + "\n")
                 
     if len(ignored_subtitle) > 0:
-        print("\n[Info]Number of repeated subtitles: ", ignored_line)
+        print(_("\n[Info]Number of repeated subtitles: "), ignored_line)
         output_file_name = input_file_name.rsplit(".", 1)[0]
         with open(output_file_name + "_repeated.txt", "w", encoding="utf-8") as f4:
             for text in ignored_subtitle:
                 f4.write(text + "\n")
-                
-    print("[Info]Done")
 
 if __name__ == "__main__":
     appname = 'subtitle-xtranslator'
@@ -327,7 +329,7 @@ if __name__ == "__main__":
             elif framework == "whisper":
                 extract_audio_whisper(model_name, device, audio_language, input_file_name)
             else: 
-                print(_("[Error] translation framework shoud be stable-ts or whisper")) 
+                print(_("[Error] transcribing framework shoud be stable-ts or whisper")) 
                 sys.exit(1)
         else: 
             print(_("[Warning] File already exists"))
