@@ -303,7 +303,7 @@ if __name__ == "__main__":
     parser.add_argument("--audio_language", type=str, default="ja", help="language spoken in the audio, specify None to perform language detection")
     parser.add_argument("--subtitle_language", type=str, default="ko", help="subtitle target language")
     parser.add_argument("--skip_textlength", type=int, default=1, help="skip short text in the subtitles, useful for removing meaningless words")
-    parser.add_argument("--translator", default="google", help="google or papago")
+    parser.add_argument("--translator", default="none", help="none, google or papago")
     parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
     
     args = parser.parse_args().__dict__
@@ -341,15 +341,18 @@ if __name__ == "__main__":
         else: 
             print(_("[Warning] File already exists"))
 
-        if skip_textlength < 0:
-            skip_textlength = 0 
+        if translator != "none":
+            if skip_textlength < 0:
+                skip_textlength = 0 
+                
+            translate_file(audio_language, subtitle_language, translator, text_split_size, output_file_name + ".srt", skip_textlength)
             
-        translate_file(audio_language, subtitle_language, translator, text_split_size, output_file_name + ".srt", skip_textlength)
-        
-        # Change the name of final srt same as video file name 
-        os.rename(output_file_name + ".srt", output_file_name + "_original.srt")
-        os.rename(output_file_name + "_translated.srt", output_file_name + ".srt")
-        print (_("[Info] final srt file is saved"))
+            # Change the name of final srt same as video file name 
+            os.rename(output_file_name + ".srt", output_file_name + "_original.srt")
+            os.rename(output_file_name + "_translated.srt", output_file_name + ".srt")
+            print (_("[Info] final srt file is saved"))
+        else: 
+            print(_("[Info] translator is none, so exit."))
     
     print(_("[Info] Done"))
 
