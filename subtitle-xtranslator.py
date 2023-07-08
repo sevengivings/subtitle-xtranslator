@@ -12,7 +12,6 @@
 
 import os 
 import sys
-import time 
 import argparse
 import torch
 import stable_whisper
@@ -343,12 +342,6 @@ if __name__ == "__main__":
                 extract_audio_whisper(model, audio_language, input_file_name)
         else: 
             print(_("[Warning] File already exists"))
-        
-        
-        # wait for seconds 
-        delay_seconds = 5
-        print(_("[Info] Waiting for %d seconds") % delay_seconds)
-        time.sleep(delay_seconds)
 
         if translator != "none":
             if skip_textlength < 0:
