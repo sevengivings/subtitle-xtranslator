@@ -12,7 +12,7 @@
 
 import os 
 import sys
-import docx 
+import time 
 import argparse
 import torch
 import stable_whisper
@@ -25,23 +25,21 @@ import urllib.request
 import json
 
 # stable-ts  
-def extract_audio_stable_whisper(model_name, device, audio_language, input_file_name, output_file_name): 
+def extract_audio_stable_whisper(model, audio_language, input_file_name, output_file_name): 
     # Check if the file exists.
     if not os.path.exists(input_file_name):
         raise FileNotFoundError(f"The file {input_file_name} does not exist.")
 
     # Extract the audio from the video.
-    model = stable_whisper.load_model(model_name, device=device)
     result = model.transcribe(verbose=True, word_timestamps=False, condition_on_previous_text=False, language=audio_language, audio=input_file_name)
-    result.to_srt_vtt(output_file_name + ".srt", word_level=False)
+    result.to_srt_vtt(output_file_name + ".srt", word_level=False) 
 
 # Whisper 
-def extract_audio_whisper(model_name, device, audio_language, input_file_name):
+def extract_audio_whisper(model, audio_language, input_file_name):
     # Check if the file exists.
     if not os.path.exists(input_file_name):
         raise FileNotFoundError(f"The file {input_file_name} does not exist.")
 
-    model = whisper.load_model(model_name).to(device)
     temperature = tuple(np.arange(0, 1.0 + 1e-6, 0.2))  # copied from Whisper original code 
     result = model.transcribe(input_file_name, temperature=temperature, verbose=True, word_timestamps=False, condition_on_previous_text=False, language=audio_language)
     output_dir = os.path.dirname(input_file_name)
@@ -321,6 +319,14 @@ if __name__ == "__main__":
     print("\nPython version: " + sys.version)
     print("Torch version: " + torch.__version__ + "\n")
 
+    if framework == "stable-ts":   
+        model = stable_whisper.load_model(model_name, device=device)
+    elif framework == "whisper":
+        model = whisper.load_model(model_name).to(device)        
+    else: 
+        print(_("[Error] transcribing framework shoud be stable-ts or whisper")) 
+        sys.exit(1)        
+        
     for input_file_name in args.pop("audio"):
         if not os.path.exists(input_file_name): 
             sys.exit(_("[Error] File does not exist: ") + input_file_name)
@@ -332,14 +338,17 @@ if __name__ == "__main__":
         # Check if the file exists
         if not os.path.exists(output_file_name + ".srt"):           
             if framework == "stable-ts":   
-                extract_audio_stable_whisper(model_name, device, audio_language, input_file_name, output_file_name)
+                extract_audio_stable_whisper(model, audio_language, input_file_name, output_file_name)
             elif framework == "whisper":
-                extract_audio_whisper(model_name, device, audio_language, input_file_name)
-            else: 
-                print(_("[Error] transcribing framework shoud be stable-ts or whisper")) 
-                sys.exit(1)
+                extract_audio_whisper(model, audio_language, input_file_name)
         else: 
             print(_("[Warning] File already exists"))
+        
+        
+        # wait for seconds 
+        delay_seconds = 5
+        print(_("[Info] Waiting for %d seconds") % delay_seconds)
+        time.sleep(delay_seconds)
 
         if translator != "none":
             if skip_textlength < 0:
