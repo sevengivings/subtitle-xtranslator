@@ -91,7 +91,7 @@ def translate_text_adc(target: str, text: str) -> dict:
 # Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
 def translate_text_apikey(target, text):
     api_key = os.environ['GOOGLE_API_KEY'] 
-    endpoint = 'https://translation.googleapis.com/language/translate/v2'
+    endpoint = f'https://translation.googleapis.com/language/translate/v2'
 
     text = text
     target_language = target
@@ -101,11 +101,17 @@ def translate_text_apikey(target, text):
         'q': text,
         'target': target_language
     }
-
-    response = requests.post(endpoint, params=params)
+    headers = {'Content-Length': str(len(str(params)))}
+    response = requests.post(endpoint, data=params, headers=headers)
+    if response.status_code != 200:
+        raise Exception(response.text)
+    
     data = response.json()
-    translated_texts = [item['translatedText'] for item in data['data']['translations']]
-    # print(translated_texts)
+    try:
+        translated_texts = [item['translatedText'] for item in data['data']['translations']]
+    except KeyError:
+        print(data)
+        sys.exit(1)
     
     return translated_texts
 
