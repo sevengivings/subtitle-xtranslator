@@ -244,7 +244,8 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
         elif translator == "papago":
             string = '\n'.join(split_list)
             # print(string)        
-            result = translate_text_papago(audio_language, subtitle_language, string)            
+            result = translate_text_papago(audio_language, subtitle_language, string)   
+            translated_list = result          
         
         text_translated_list_all.append(translated_list)
         print(_("[Info] number of sentences translated: "), len(translated_list)) 
