@@ -25,7 +25,7 @@ msgstr "[정보] 네이버 파파고를 이용합니다."
 msgid ""
 "[Error] Please set NAVER_CLOUD_ID and NAVER_CLIENT_SECRET environment "
 "variables."
-msgstr "네이버 파파고 번역을 위해 환경 변수를 설정해 주세요. 파워쉘에서는 Set-Item -Path env:NAVER_CLOUD_ID -Value your_id_value와 Set-Item -Path env:NAVER_CLIENT_SECRET -Value your_password_value입니다."
+msgstr "네이버 파파고 번역을 위해 환경 변수를 설정해 주세요. 파워쉘에서는 Set-Item -Path env:NAVER_CLOUD_ID -Value 'your_id_value'와 Set-Item -Path env:NAVER_CLIENT_SECRET -Value 'your_password_value'입니다."
 
 #: .\subtitle-xtranslator.py:144
 msgid "[Error] Request failed with status code:"
