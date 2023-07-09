@@ -48,7 +48,7 @@ Whisper : General-purpose speech recognition model(https://github.com/openai/whi
 
 Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생성) 또는 API 키를 선택할 수 있으며, 다음은 API 키에 대한 설명입니다. ADC는 로컬 컴퓨터에 클라우드 사용을 위한 인증 파일을 만드는 방법이라서 API 키 유출을 걱정할 필요가 없습니다. 물론 해당 파일이 유출되면 안되겠지요... 다소 번거롭지만 소스코드에 API 키를 내장하는 것보다는 아래와 같이 환경 변수로 지정해 주는 것이 보안에 더 좋아 보입니다. 다만, 해당 세션에서만 작동하므로 컴퓨터를 껐다 켜거나 파워쉘과 venv를 다시 로딩했다면 또 해주어야 하는 번거로움은 있습니다. 
 
-구글 클라우드 번역을 이용하려면 구글 클라우드 콘솔에서 프로젝트를 새로 하나 만들고 Google Cloud Translation서비스를 선택하고 ADC를 설정하거나 API key를 만들어야 합니다. 혹은 API key만 받는 방법은 좀 더 간단해 보입니다(https://urame.tistory.com/entry/GoogleGCP-Translation-API%EB%B2%88%EC%97%AD-API-%EC%8B%A0%EC%B2%AD-%EB%B0%8F-PYTHON-%ED%85%8C%EC%8A%A4%ED%8A%B8). 
+구글 클라우드 번역을 이용하려면 구글 클라우드 콘솔에서 프로젝트를 새로 하나 만들고 Google Cloud Translation서비스를 선택하고 ADC를 설정하거나 API key를 만들어야 합니다. ADC말고 API key만 받는 방법은 좀 더 간단해 보입니다(https://urame.tistory.com/entry/GoogleGCP-Translation-API%EB%B2%88%EC%97%AD-API-%EC%8B%A0%EC%B2%AD-%EB%B0%8F-PYTHON-%ED%85%8C%EC%8A%A4%ED%8A%B8). 
 
 - https://console.cloud.google.com/
 - https://cloud.google.com/translate/docs/basic/translating-text
