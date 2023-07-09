@@ -54,7 +54,7 @@ Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생
 - https://cloud.google.com/translate/docs/basic/translating-text
 - https://cloud.google.com/docs/authentication/provide-credentials-adc?hl=ko#local-dev 
 
-비용 : 요금은 Cloud Translation에 제공된 문자 수로 조정됩니다. 예를 들어 한 달에 575,000자를 전송하여 처리한 경우 $1.50가 청구됩니다. 처음 500,000자는 무료이고 다음 75,000자는 $20,000(영문 기준) 요율로 청구됩니다.
+비용 : 요금은 Cloud Translation에 제공된 문자 수로 조정됩니다. 예를 들어 한 달에 575,000자를 전송하여 처리한 경우 $1.50가 청구됩니다. 처음 500,000자는 무료이고 다음 75,000자는 $20달러/50만자(영문 기준) 요율로 청구됩니다.
 
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
