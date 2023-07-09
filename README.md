@@ -5,7 +5,7 @@ A Python script to extract text from audio/video and translate subtitle using Go
 
 OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다. 
 
-위스퍼(https://github.com/openai/whisper)의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제작이 매우 편리해졌고, 구글과 네이버는 인공지능 기반의 번역 서비스를 제공하고 있습니다.
+OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제작이 매우 편리해졌고, 구글과 네이버는 인공지능 기반의 번역 서비스를 제공하고 있습니다.
 
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합한 프로그램입니다. 
 
