@@ -174,6 +174,6 @@ word_timestamps=True가 기본 값인데, 말하는 중 단어가 하이라이�
 (venv) C:\Users\login_id> pip install pyinstaller
 (venv) C:\Users\login_id> pyinstaller --onefile .\subtitle-xtranslator.py 
 ```
-위 결과로 나오는 C:\Users\login_id\dist\subtitle-xtranslator.exe를 C:\Users\login_id\venv\Scripts나 PATH가 지정된 아무 곳에나 복사하면 됩니다. 이제 venv를 활성화만 시키면 어느 곳에서나 실행이 가능해집니다(vevn\Scripts에 복사한 경우).
+위 결과로 나오는 C:\Users\login_id\dist\subtitle-xtranslator.exe를 윈도우의 경로 PATH가 지정된 아무 곳에나 복사하면 됩니다. 이제 어느 곳에서나 실행이 가능해집니다(venv와 관계 없이).
 
-위 방식으로 만들면 약 2.5GB의 크기를 가지고 있어서 만들어지는데 많이 오래 걸립니다.
+위 방식으로 만들면 약 2.7GB의 크기를 가지고 있어서 만드는데, 그리고 최초 실행할 때 오래 걸립니다.
