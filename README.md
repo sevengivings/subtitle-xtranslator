@@ -37,15 +37,20 @@ Whisper : General-purpose speech recognition model(https://github.com/openai/whi
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-이 프로그램에 API 키를 제공하려면 환경 변수를 사용해야 합니다. 
+이 프로그램에 번역을 위해 API 키를 제공하려면 환경 변수를 사용해야 합니다. 
 
-파파고용 API 키 제공 방법 
+파파고용 API 키 제공 방법은 다음과 같습니다. 먼저 개발자 등록을 하여 테스트 계정을 설정해야 합니다. 하루에 무료로 제공되는 번역량은 1만자입니다. 상용으로 전환할 경우 백만자당 2만원이 청구되는 것 같습니다. 
+
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:NAVER_CLOUD_ID -Value "your_id" 
 (venv) C:\Users\loginid> Set-Item -Path env:NAVER_CLIENT_SECRET -Value "your_password"
 ```
 
 Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생성) 또는 API 키를 선택할 수 있으며, 다음은 API 키에 대한 설명입니다. ADC는 로컬 컴퓨터에 클라우드 사용을 위한 인증 파일을 만드는 방법이라서 API 키 유출을 걱정할 필요가 없습니다. 물론 해당 파일이 유출되면 안되겠지요... 다소 번거롭지만 소스코드에 API 키를 내장하는 것보다는 아래와 같이 환경 변수로 지정해 주는 것이 보안에 더 좋아 보입니다. 다만, 해당 세션에서만 작동하므로 컴퓨터를 껐다 켜거나 파워쉘과 venv를 다시 로딩했다면 또 해주어야 하는 번거로움은 있습니다. 
+
+ADC설정 방법은 다음 링크를 참고하세요. https://cloud.google.com/docs/authentication/provide-credentials-adc?hl=ko#local-dev 
+
+비용 : 요금은 Cloud Translation에 제공된 문자 수로 조정됩니다. 예를 들어 한 달에 575,000자를 전송하여 처리한 경우 $1.50가 청구됩니다. 처음 500,000자는 무료이고 다음 75,000자는 $20,000(영문 기준) 요율로 청구됩니다.
 
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
@@ -106,7 +111,7 @@ PS C:\Users\login_id> .\venv\Scripts\Activate.ps1
 
 5.GPU버전의 pyTorch설치
 
-위 과정이 끝나면 바로 쓸 수 있기는 한데, CPU버전의 pyTorch가 설치되는 것 같습니다. 이번에는 GPU버전의 토치를 설치합니다.
+위 과정이 끝나면 바로 쓸 수 있기는 한데, CPU버전의 pyTorch가 설치되는 것 같습니다. 이번에는 GPU버전의 토치를 설치합니다. 아래 예는 cu117로 되어 있는데 cu118로 해도 잘 됩니다.
 
 ```
 (venv) PS C:\Users\login_id> pip install torch==2.0.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
