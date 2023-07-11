@@ -1,5 +1,5 @@
 # subtitle-xtranslator
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/master/README.en.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/main/README.en.md)
 
 A Python script to extract text from audio/video and translate subtitle using Google or Naver translation API. 
 
