@@ -1,5 +1,5 @@
 # subtitle-xtranslator
-[![ko](https://img.shields.io/badge/lang-ko-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/master/README.md)
+[![ko](https://img.shields.io/badge/lang-ko-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/main/README.md)
 
 A Python script to extract text from audio/video and translate subtitle
 
