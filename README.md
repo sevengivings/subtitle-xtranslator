@@ -5,14 +5,14 @@ A Python script to extract text from audio/video and translate subtitle using Go
 
 OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다. 
 
-OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제작이 매우 편리해졌고, 구글과 네이버는 인공지능 기반의 번역 서비스를 제공하고 있습니다.
+OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제작이 매우 편리해졌고, 구글과 네이버, DeepL은 인공지능 기반의 번역 서비스를 제공하고 있습니다.
 
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
 [기능과 특징] 
 
 - 동영상에서 자막을 만들 수 있는 stable-ts 또는 Whisper 지원
-- 구글 클라우드 번역(ADC 또는 API KEY) 또는 네이버 파파고 번역 서비스 지원
+- 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL(Rapidapi버전) 번역 서비스 지원
 - 의미 없는 짧은 자막이나 반복되는 자막 제거 지원
 
 [한계]
@@ -31,8 +31,9 @@ Whisper : General-purpose speech recognition model(https://github.com/openai/whi
 ```
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --subtitle_language=ko --skip_textlength=1 --translator none --text_split_size=1000 '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
+(주의: deepl-rapidapi의 경우 무료 계정은 월100번만 호출할 수 있으므로, text_split_size는 3000으로 설정 필요)
 
-실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 물론 한국어로 번역을 하기 위해서는 --translator google 이나 --translator papago 를 생략하면 안됩니다. 
+실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 물론 한국어로 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
 ```
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
@@ -58,6 +59,14 @@ Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생
 
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
+```
+
+DeepL은 아직 국내에서 API는 사용할 수 없습니다. 마만,  https://rapidapi.com/splintPRO/api/deepl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
+
+신용카드를 등록한 후, 무료로 월 100번의 호출과 300,000만자까지 지원됩니다. 1회 호출당 3천글자까지 가능합니다. 무료 계정이라고 해도 호출 회수가 100회에서 넘어가면 과금이 되므로 주의해야 합니다. 
+
+```
+(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
 ```
 
 [윈도우10/11 기준 준비 작업]
