@@ -3,14 +3,14 @@
 
 A Python script to extract text from audio/video and translate subtitle
 
-Thanks to state-of-arts AI general-purpose speech recognition function of Whisper(https://github.com/openai/whisper), making subtitle from videos is very convenient. Also, Google and Naver provide AI based translation service.
+Thanks to state-of-arts AI general-purpose speech recognition function of Whisper(https://github.com/openai/whisper), making subtitle from videos is very convenient. Also, Google, Naver and DeepL provide AI based translation service.
 
 This program combines above transcribing and translation functions. 
 
 [Features] 
 
 - supports Stable-ts or Whisper to make subtitle from video
-- supports Google cloud translation(ADC or API KEY) or Naver Papago translation service
+- supports Google cloud translation(ADC or API KEY), Naver Papago translation, DeepL-Rapidapi translation
 - supports removal of no-meaning short subtitles or repeated subtitles
 
 [Usage] 
@@ -38,6 +38,13 @@ For Google you can choose ADC(Application Default Credential - special file crea
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
 ```
+
+For now, DeepL does not provide pro service, but we can access DeepL-Rapidapi service(needs credit card).  
+For DeepL-Rapidapi it is required to set environment variable. https://rapidapi.com/splintPRO/api/deepl-translator 
+```
+(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
+```
+(Caution)Although you choose free version, if you exceed quota(100 calls per month) payment is required. 
 
 [Prerequisites] 
 
