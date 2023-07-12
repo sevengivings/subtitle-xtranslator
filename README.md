@@ -61,7 +61,7 @@ Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생
 (venv) C:\Users\loginid> Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
 ```
 
-DeepL은 아직 국내에서 API는 사용할 수 없습니다. 마만,  https://rapidapi.com/splintPRO/api/deepl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
+DeepL은 아직 국내에서 API는 사용할 수 없습니다. 다만,  https://rapidapi.com/splintPRO/api/deepl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
 
 신용카드를 등록한 후, 무료로 월 100번의 호출과 300,000만자까지 지원됩니다. 1회 호출당 3천글자까지 가능합니다. 무료 계정이라고 해도 호출 회수가 100회에서 넘어가면 과금이 되므로 주의해야 합니다. 
 
