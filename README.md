@@ -1,7 +1,7 @@
 # subtitle-xtranslator
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/main/README.en.md)
 
-A Python script to extract text from audio/video and translate subtitle using Google or Naver translation API. 
+A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago and DeepL-Rapidapi translation API. 
 
 OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다. 
 
