@@ -132,6 +132,8 @@ def translate_text_papago(audio, target, text):
     request = urllib.request.Request(url)
     request.add_header("X-Naver-Client-Id",client_id)
     request.add_header("X-Naver-Client-Secret",client_secret)
+    
+    # if requests exceed quota, you will see 'urllib.error.HTTPError: HTTP Error 429: Too Many Requests'   
     response = urllib.request.urlopen(request, data=data.encode("utf-8"))
     rescode = response.getcode()
     
@@ -145,6 +147,50 @@ def translate_text_papago(audio, target, text):
         return translated_list
     else:
         print(_("[Error] Request failed with status code:") + rescode)
+
+# https://rapidapi.com/splintPRO/api/deepl-translator
+# free: 100 calls per month, 3000 characters per call, 300,000 characters per month 
+# PowerShell 
+# Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key"
+def translate_text_deepl_rapidapi(audio, target, text):
+    try:
+        api_key = os.environ['DEEPL_RAPIDAPI_KEY'] 
+        print(_("[Info] DeepL-Rapidapi will be used."))
+    except KeyError:
+        print(_("[Error] Please set DEEPL_RAPIDAPI_KEY environment variables."))
+        sys.exit(1)
+        
+    url = f'https://deepl-translator.p.rapidapi.com/translate'
+
+    text = text
+    target_language = target.upper() 
+    source_language = audio.upper() 
+
+    payload = {
+        'text': text,
+        'source': source_language,
+        'target': target_language
+    }
+    
+    headers = {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": api_key,
+        "X-RapidAPI-Host": "deepl-translator.p.rapidapi.com"
+    }   
+
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code != 200:
+        raise Exception(response.text)
+    
+    data = response.json()
+    try:
+        translated_texts = data['text'] 
+        translated_list = translated_texts.split('\n')
+    except KeyError:
+        print(data)
+        sys.exit(1)
+    
+    return translated_list
 
 # removes unnecessary short and repeated characters from the subtitle text and translate using Google Cloud Translate 
 def translate_file(audio_language, subtitle_language, translator, text_split_size, input_file_name, skip_textlength):
@@ -212,7 +258,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
     # Google Cloud Translate only supports maximum text segments : 128 
     num_of_segments = 0 
     for string in subtitle_text_list:
-        if current_length + len(string) <= text_split_size and num_of_segments < 127:
+        if current_length + len(string) <= text_split_size and (translator != "google" or num_of_segments < 127):
             current_list.append(string)
             current_length += len(string)
             num_of_segments += 1
@@ -228,7 +274,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
         split_lists.append(current_list)
      
     # translate each splitted list 
-    text_translated_list_all = [] 
+    i = 0 
     for split_list in split_lists:
         if translator == "google":
             google_api_key = ""
@@ -249,24 +295,28 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
             # print(string)        
             result = translate_text_papago(audio_language, subtitle_language, string)   
             translated_list = result          
+        elif translator == "deepl-rapidapi":
+            string = '\n'.join(split_list)       
+            result = translate_text_deepl_rapidapi(audio_language, subtitle_language, string)   
+            translated_list = result                 
         
-        text_translated_list_all.append(translated_list)
         print(_("[Info] number of sentences translated: "), len(translated_list)) 
-    
-    # Save the subtitle text to a new file.
-    # create a new file with the same name as the input file, consider file name contains multiple '.' 
-    output_file_name = input_file_name.rsplit(".", 1)[0]
-            
-    with open(output_file_name + "_translated.srt", "w", encoding="utf-8") as fout:       
-        i = 0 
-        for lists in text_translated_list_all:
-            for string in lists: 
+        
+        # for safety, save to .srt file every successful translation.  
+        # Save the subtitle text to a new file.
+        # create a new file with the same name as the input file, consider file name contains multiple '.' 
+        output_file_name = input_file_name.rsplit(".", 1)[0]
+                
+        with open(output_file_name + "_translated.srt", "a", encoding="utf-8") as fout:       
+            for string in translated_list: 
                 fout.write(f"{i+1}\n")
                 fout.write(f"{time_sync_data_list.pop()}\n")
                 fout.write(f"{string.strip()}\n")
                 if i != len(time_sync_data_list)-1:
                     fout.write("\n")     
-                i += 1                 
+                i += 1         
+                    
+        translated_list = []        
     
     # Print the total_length
     print(_("\n[Info] Number of characters: "), total_length)
@@ -289,7 +339,7 @@ if __name__ == "__main__":
     appname = 'subtitle-xtranslator'
     localedir = './locale'
         
-    en_i18n = gettext.translation(appname, localedir, fallback=True, languages=['ko'])  # All messages are in Korean
+    en_i18n = gettext.translation(appname, localedir, fallback=True, languages=['ko'])  # Korean default
     en_i18n.install()
 
     parser= argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -300,7 +350,7 @@ if __name__ == "__main__":
     parser.add_argument("--audio_language", type=str, default="ja", help="language spoken in the audio, specify None to perform language detection")
     parser.add_argument("--subtitle_language", type=str, default="ko", help="subtitle target language")
     parser.add_argument("--skip_textlength", type=int, default=1, help="skip short text in the subtitles, useful for removing meaningless words")
-    parser.add_argument("--translator", default="none", help="none, google or papago")
+    parser.add_argument("--translator", default="none", help="none, google, papago or deepl-rapidapi")
     parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
     
     args = parser.parse_args().__dict__

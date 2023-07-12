@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-08 13:08+0900\n"
+"POT-Creation-Date: 2023-07-12 12:17+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,68 +17,80 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\subtitle-xtranslator.py:120
+#: .\subtitle-xtranslator.py:123
 msgid "[Info] Naver Papago will be used."
 msgstr ""
 
-#: .\subtitle-xtranslator.py:122
+#: .\subtitle-xtranslator.py:125
 msgid ""
 "[Error] Please set NAVER_CLOUD_ID and NAVER_CLIENT_SECRET environment "
 "variables."
 msgstr ""
 
-#: .\subtitle-xtranslator.py:144
+#: .\subtitle-xtranslator.py:147
 msgid "[Error] Request failed with status code:"
 msgstr ""
 
-#: .\subtitle-xtranslator.py:150
+#: .\subtitle-xtranslator.py:156
+msgid "[Info] DeepL-Rapidapi will be used."
+msgstr ""
+
+#: .\subtitle-xtranslator.py:158
+msgid "[Error] Please set DEEPL_RAPIDAPI_KEY environment variables."
+msgstr ""
+
+#: .\subtitle-xtranslator.py:197
 msgid "[Error] The file does not exist:"
 msgstr ""
 
-#: .\subtitle-xtranslator.py:230
+#: .\subtitle-xtranslator.py:281
 msgid "[Info] Using Google Cloud Translate"
 msgstr ""
 
-#: .\subtitle-xtranslator.py:232
+#: .\subtitle-xtranslator.py:283
 msgid "[Info] Using Google Cloud Translate (ADC)"
 msgstr ""
 
-#: .\subtitle-xtranslator.py:246
+#: .\subtitle-xtranslator.py:302
 msgid "[Info] number of sentences translated: "
 msgstr ""
 
-#: .\subtitle-xtranslator.py:264
+#: .\subtitle-xtranslator.py:320
 msgid ""
 "\n"
 "[Info] Number of characters: "
 msgstr ""
 
-#: .\subtitle-xtranslator.py:267
+#: .\subtitle-xtranslator.py:323
 msgid "[Info]Number of short subtitles: "
 msgstr ""
 
-#: .\subtitle-xtranslator.py:274
+#: .\subtitle-xtranslator.py:330
 msgid ""
 "\n"
 "[Info]Number of repeated subtitles: "
 msgstr ""
 
-#: .\subtitle-xtranslator.py:317
-msgid "[Error] File does not exist: "
-msgstr ""
-
-#: .\subtitle-xtranslator.py:330
+#: .\subtitle-xtranslator.py:374
 msgid "[Error] transcribing framework shoud be stable-ts or whisper"
 msgstr ""
 
-#: .\subtitle-xtranslator.py:333
+#: .\subtitle-xtranslator.py:379
+msgid "[Error] File does not exist: "
+msgstr ""
+
+#: .\subtitle-xtranslator.py:392
 msgid "[Warning] File already exists"
 msgstr ""
 
-#: .\subtitle-xtranslator.py:343
+#: .\subtitle-xtranslator.py:403
 msgid "[Info] final srt file is saved"
 msgstr ""
 
-#: .\subtitle-xtranslator.py:345
+#: .\subtitle-xtranslator.py:405
+msgid "[Info] translator is none, so exit."
+msgstr ""
+
+#: .\subtitle-xtranslator.py:407
 msgid "[Info] Done"
 msgstr ""
