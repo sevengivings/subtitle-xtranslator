@@ -1,4 +1,4 @@
-# Extract subtitle from video(stable-ts or whisper) and translate subtitle(google or papago) 
+# Extract subtitle from video(stable-ts or whisper) and translate subtitle(google, papago or DeepL-Rapidapi) 
 
 # Requires:
 # - stable-ts (https://github.com/jianfch/stable-ts) (pip install stable-ts)
