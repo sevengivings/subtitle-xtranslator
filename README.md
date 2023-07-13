@@ -22,8 +22,8 @@ stable-ts와 whisper 명령어로 했을 때와 이 프로그램을 사용했을
 
 [관련 프로그램 링크]
 
-stable-ts : GitHub - jianfch/stable-ts: ASR with reliable word-level timestamps using OpenAI's Whisper(https://github.com/jianfch/stable-ts)
-Whisper : General-purpose speech recognition model(https://github.com/openai/whisper)
+- stable-ts : GitHub - jianfch/stable-ts: ASR with reliable word-level timestamps using OpenAI's Whisper(https://github.com/jianfch/stable-ts)
+- Whisper : General-purpose speech recognition model(https://github.com/openai/whisper)
 
 [사용법] 
 
