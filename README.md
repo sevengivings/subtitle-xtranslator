@@ -28,10 +28,40 @@ Whisper : General-purpose speech recognition model(https://github.com/openai/whi
 [사용법] 
 
 이 스크립트를 실행하려면 몇 가지 전제 조건을 준비해야 합니다(아래 섹션 참조 - [윈도우10/11 기준 준비 작업]). 
+
+```
+usage: subtitle-xtranslator.py [-h] [--framework FRAMEWORK] [--model MODEL] [--device DEVICE]
+                               [--audio_language AUDIO_LANGUAGE] [--subtitle_language SUBTITLE_LANGUAGE]
+                               [--skip_textlength SKIP_TEXTLENGTH] [--translator TRANSLATOR]
+                               [--text_split_size TEXT_SPLIT_SIZE]
+                               audio [audio ...]
+
+positional arguments:
+  audio                 audio/video file(s) to transcribe
+
+options:
+  -h, --help            show this help message and exit
+  --framework FRAMEWORK
+                        name of the stable-ts or Whisper framework to use (default: stable-ts)
+  --model MODEL         tiny, base, small, medium, large model to use (default: medium)
+  --device DEVICE       device to use for PyTorch inference (default: cuda)
+  --audio_language AUDIO_LANGUAGE
+                        language spoken in the audio, specify None to perform language detection (default: ja)
+  --subtitle_language SUBTITLE_LANGUAGE
+                        subtitle target language (default: ko)
+  --skip_textlength SKIP_TEXTLENGTH
+                        skip short text in the subtitles, useful for removing meaningless words (default: 1)
+  --translator TRANSLATOR
+                        none, google, papago or deepl-rapidapi (default: none)
+  --text_split_size TEXT_SPLIT_SIZE
+                        split the text into small lists to speed up the translation process (default: 1000)
+```
+
+아래 명령은 각 인자들의 기본 값을 명시적으로 표시하여 실행해 본 것입니다. 
+
 ```
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --subtitle_language=ko --skip_textlength=1 --translator none --text_split_size=1000 '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
-(주의: deepl-rapidapi의 경우 무료 계정은 월100번만 호출할 수 있으므로, text_split_size는 3000으로 설정 필요)
 
 실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 물론 한국어로 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
 ```
@@ -64,6 +94,8 @@ Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생
 DeepL은 아직 국내에서 API는 사용할 수 없습니다. 다만,  https://rapidapi.com/splintPRO/api/deepl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
 
 신용카드를 등록한 후, 무료로 월 100번의 호출과 300,000만자까지 지원됩니다. 1회 호출당 3천글자까지 가능합니다. 무료 계정이라고 해도 호출 회수가 100회에서 넘어가면 과금이 되므로 주의해야 합니다. 
+
+(주의: deepl-rapidapi의 경우 무료 계정은 월100번만 호출할 수 있으므로, text_split_size는 3000으로 설정 필요)
 
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
