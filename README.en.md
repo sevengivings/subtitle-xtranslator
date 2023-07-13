@@ -15,6 +15,35 @@ This program combines above transcribing and translation functions.
 
 [Usage] 
 
+```
+usage: subtitle-xtranslator.py [-h] [--framework FRAMEWORK] [--model MODEL] [--device DEVICE]
+                               [--audio_language AUDIO_LANGUAGE] [--subtitle_language SUBTITLE_LANGUAGE]
+                               [--skip_textlength SKIP_TEXTLENGTH] [--translator TRANSLATOR]
+                               [--text_split_size TEXT_SPLIT_SIZE]
+                               audio [audio ...]
+
+positional arguments:
+  audio                 audio/video file(s) to transcribe
+
+options:
+  -h, --help            show this help message and exit
+  --framework FRAMEWORK
+                        name of the stable-ts or Whisper framework to use (default: stable-ts)
+  --model MODEL         tiny, base, small, medium, large model to use (default: medium)
+  --device DEVICE       device to use for PyTorch inference (default: cuda)
+  --audio_language AUDIO_LANGUAGE
+                        language spoken in the audio, specify None to perform language detection (default: ja)
+  --subtitle_language SUBTITLE_LANGUAGE
+                        subtitle target language (default: ko)
+  --skip_textlength SKIP_TEXTLENGTH
+                        skip short text in the subtitles, useful for removing meaningless words (default: 1)
+  --translator TRANSLATOR
+                        none, google, papago or deepl-rapidapi (default: none)
+  --text_split_size TEXT_SPLIT_SIZE
+                        split the text into small lists to speed up the translation process (default: 1000)
+```
+
+
 To run this script, you should prepare some prerequisites.(see below section) 
 ```
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --subtitle_language=ko --skip_textlength=1 --translator none --text_split_size=1000 '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
