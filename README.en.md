@@ -9,7 +9,7 @@ This program combines above transcribing and translation functions.
 
 [Features] 
 
-- supports Stable-ts or Whisper to make subtitle from video
+- supports stable-ts(https://github.com/jianfch/stable-ts) or Whisper to make subtitle from video
 - supports Google cloud translation(ADC or API KEY), Naver Papago translation, DeepL-Rapidapi translation
 - supports removal of no-meaning short subtitles or repeated subtitles
 
