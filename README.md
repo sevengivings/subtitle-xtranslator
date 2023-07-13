@@ -29,6 +29,8 @@ Whisper : General-purpose speech recognition model(https://github.com/openai/whi
 
 이 스크립트를 실행하려면 몇 가지 전제 조건을 준비해야 합니다(아래 섹션 참조 - [윈도우10/11 기준 준비 작업]). 
 
+아래는 전체 사용법을 보기 위해 -h를 실행한 모습입니다. 
+
 ```
 usage: subtitle-xtranslator.py [-h] [--framework FRAMEWORK] [--model MODEL] [--device DEVICE]
                                [--audio_language AUDIO_LANGUAGE] [--subtitle_language SUBTITLE_LANGUAGE]
