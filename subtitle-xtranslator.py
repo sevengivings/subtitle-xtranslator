@@ -298,7 +298,10 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
         elif translator == "deepl-rapidapi":
             string = '\n'.join(split_list)       
             result = translate_text_deepl_rapidapi(audio_language, subtitle_language, string)   
-            translated_list = result                 
+            translated_list = result  
+        else: 
+            print(_("[Error] Invalid translator"))
+            sys.exit(1)               
         
         print(_("[Info] number of sentences translated: "), len(translated_list)) 
         
@@ -310,7 +313,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
         with open(output_file_name + "_translated.srt", "a", encoding="utf-8") as fout:       
             for string in translated_list: 
                 fout.write(f"{i+1}\n")
-                fout.write(f"{time_sync_data_list.pop()}\n")
+                fout.write(f"{time_sync_data_list[i]}\n")
                 fout.write(f"{string.strip()}\n")
                 if i != len(time_sync_data_list)-1:
                     fout.write("\n")     
