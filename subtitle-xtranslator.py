@@ -258,9 +258,9 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
     # Google Cloud Translate only supports maximum text segments : 128 
     num_of_segments = 0 
     for string in subtitle_text_list:
-        if current_length + len(string) <= text_split_size and (translator != "google" or num_of_segments < 127):
+        if current_length + len(string) < text_split_size and (translator != "google" or num_of_segments < 127):
             current_list.append(string)
-            current_length += len(string)
+            current_length += len(string) + 1  # 1 for string = '\n'.join(split_list)
             num_of_segments += 1
         else:
             split_lists.append(current_list)
