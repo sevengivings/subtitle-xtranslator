@@ -9,23 +9,23 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
-[기능과 특징] 
+###[기능과 특징] 
 
 - 동영상에서 자막을 만들 수 있는 stable-ts 또는 Whisper 지원
 - 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL(Rapidapi버전) 번역 서비스 지원
 - 의미 없는 짧은 자막이나 반복되는 자막 제거 지원
 
-[한계]
+###[한계]
 
 음성 인식이 완전하지 않아서 누락되는 음성이나 잘못 인식될 수 있습니다. 프로페셔널한 용도로 사용은 권장하지 않습니다.
 stable-ts와 whisper 명령어로 했을 때와 이 프로그램을 사용했을 때, Whisper WebUI를 썼을 때 각각 자막의 품질이나 개수가 다를 수 있습니다(최적화 파라미터가 많아서 모두 알 수 없으며, 참고로 stable-ts는 자막 추출 용도로 최적화한 프로그램이기도 하지만 Whisper 오리지널에 비해 인식 누락이 있는 편입니다. 하지만, 없는데 추출된 귀신 소리, 무의미한 반복, 뒷부분 추출 안되는 등의 문제는 적은 편입니다.)
 
-[관련 프로그램 링크]
+###[관련 프로그램 링크]
 
 - stable-ts : GitHub - jianfch/stable-ts: ASR with reliable word-level timestamps using OpenAI's Whisper(https://github.com/jianfch/stable-ts)
 - Whisper : General-purpose speech recognition model(https://github.com/openai/whisper)
 
-[사용법] 
+###[사용법] 
 
 이 스크립트를 실행하려면 몇 가지 전제 조건을 준비해야 합니다(아래 섹션 참조 - [윈도우10/11 기준 준비 작업]). 
 
@@ -125,7 +125,7 @@ DeepL은 아직 국내에서 API는 사용할 수 없습니다. 다만,  https:/
 ```
 
 demucs, vad, mel_first에 관하여는 stable-ts의 개발자 팁에서는 다음과 같은 이야기가 있습니다. 
-- 음악에는 demucs=True, vad=True를 사용하지만 음악이 아닌 경우에도 작동합니다(단, vad의 경우 특정 언어만 지원한다고 되어 있음).
+- 음악에는 demucs=True, vad=True를 사용하지만 음악이 아닌 경우에도 작동합니다.
 - 오디오가 Whisper에 비해 제대로 추출되지 않는 경우, 긴 오디오 트랙의 경우 메모리 사용량을 늘어나지만 mel_first=True를 사용해 보세요.
 
 demucs와 vad를 사용하려면 다음 패키지도 설치하여야 합니다. 
@@ -135,7 +135,8 @@ demucs와 vad를 사용하려면 다음 패키지도 설치하여야 합니다.
 (venv) C:\Users\loginid> pip install silero
 ```  
 
-[윈도우10/11 기준 준비 작업]
+
+###[윈도우10/11 기준 준비 작업]
 
 1.파이썬 설치
 
@@ -242,7 +243,7 @@ word_timestamps=True가 기본 값인데, 말하는 중 단어가 하이라이�
 ```
 (주의) 만약 한글로 된 안내 메시지를 보려면 압축 파일의 locale 디렉토리도 필요합니다.
 
-[단일 exe로 만들기]
+###[단일 exe로 만들기]
 
 지금까지는 python .\subtitle-xtranslator.py로 실행을 했습니다. 다소 불편하므로 exe파일로 만든 후, venv\Scripts에 복사하여 아무 드라이브나 디렉토리에서도 실행할 수 있도록 해보겠습니다.
 ```
