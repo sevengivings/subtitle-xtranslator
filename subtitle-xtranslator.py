@@ -24,15 +24,15 @@ import urllib.request
 import json
 
 # stable-ts  
-def extract_audio_stable_whisper(model, condition_on_previous_text, stable_demucs, stable_vad, stable_mel_first, audio_language, input_file_name, output_file_name): 
+def extract_audio_stable_whisper(model, condition_on_previous_text, stable_demucs, stable_vad, vad_threshold, stable_mel_first, audio_language, input_file_name, output_file_name): 
     # Check if the file exists.
     if not os.path.exists(input_file_name):
         raise FileNotFoundError(f"The file {input_file_name} does not exist.")
 
-    print(f'demucs: {stable_demucs}, vad: {stable_vad}, mel_first: {stable_mel_first}')
+    print(f'condition_on_previous_text: {condition_on_previous_text}, demucs: {stable_demucs}, vad: {stable_vad}, vad_threshold: {vad_threshold}, mel_first: {stable_mel_first}')
     # Extract the audio from the video.
     result = model.transcribe(verbose=True, word_timestamps=False, condition_on_previous_text=condition_on_previous_text, \
-                              demucs=stable_demucs, vad=stable_vad, mel_first=stable_mel_first, \
+                              demucs=stable_demucs, vad=stable_vad, vad_threshold=vad_threshold, mel_first=stable_mel_first, \
                               language=audio_language, audio=input_file_name)
     result.to_srt_vtt(output_file_name + ".srt", word_level=False) 
 
@@ -42,6 +42,8 @@ def extract_audio_whisper(model, condition_on_previous_text, audio_language, inp
     if not os.path.exists(input_file_name):
         raise FileNotFoundError(f"The file {input_file_name} does not exist.")
 
+    print(f'condition_on_previous_text: {condition_on_previous_text}')
+          
     temperature = tuple(np.arange(0, 1.0 + 1e-6, 0.2))  # copied from Whisper original code 
     result = model.transcribe(input_file_name, temperature=temperature, verbose=True, word_timestamps=False, condition_on_previous_text=condition_on_previous_text, language=audio_language)
     output_dir = os.path.dirname(input_file_name)
@@ -372,6 +374,9 @@ if __name__ == "__main__":
                         help='stable-ts only, whether to use Silero VAD to generate timestamp suppression mask; '
                              'pip install silero; '
                              'Official repo: https://github.com/snakers4/silero-vad')
+    parser.add_argument('--vad_threshold', type=float, default=0.2,
+                        help='stable-ts only, threshold for detecting speech with Silero VAD. (Default: 0.2); '
+                             'low threshold reduces false positives for silence detection')
     parser.add_argument('--mel_first', action='store_true',
                         help='stable-ts only, process entire audio track into log-Mel spectrogram first instead in chunks'
                              'if audio is not transcribing properly compared to whisper, at the cost of more memory usage for long audio tracks')
@@ -391,6 +396,7 @@ if __name__ == "__main__":
     # stable_ts only
     use_demucs: bool = args.pop("demucs")
     use_vad: bool = args.pop("vad")
+    vad_threshold: float = args.pop("vad_threshold")
     is_mel_first: bool = args.pop("mel_first")
 
     print("subtitle-xtranslator: AI subtitle extraction and translation tool")
@@ -417,7 +423,7 @@ if __name__ == "__main__":
         # Check if the file exists
         if not os.path.exists(output_file_name + ".srt"):           
             if framework == "stable-ts":   
-                extract_audio_stable_whisper(model, use_condition_on_previous_text, use_demucs, use_vad, is_mel_first, audio_language, input_file_name, output_file_name)
+                extract_audio_stable_whisper(model, use_condition_on_previous_text, use_demucs, use_vad, vad_threshold, is_mel_first, audio_language, input_file_name, output_file_name)
             elif framework == "whisper":
                 extract_audio_whisper(model, use_condition_on_previous_text, audio_language, input_file_name)
         else: 
