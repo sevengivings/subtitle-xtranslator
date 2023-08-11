@@ -57,6 +57,18 @@ options:
                         none, google, papago or deepl-rapidapi (default: none)
   --text_split_size TEXT_SPLIT_SIZE
                         split the text into small lists to speed up the translation process (default: 1000)
+  --condition_on_previous_text
+                        if True, provide the previous output of the model as a prompt for the next window; disabling
+                        may make the text inconsistent across windows, but the model becomes less prone to getting
+                        stuck in a failure loop (default: False)
+  --demucs              stable-ts only, whether to reprocess the audio track with Demucs to isolate vocals/remove
+                        noise; pip install demucs PySoundFile; Demucs official repo:
+                        https://github.com/facebookresearch/demucs (default: False)
+  --vad                 stable-ts only, whether to use Silero VAD to generate timestamp suppression mask; pip install
+                        silero; Official repo: https://github.com/snakers4/silero-vad (default: False)
+  --mel_first           stable-ts only, process entire audio track into log-Mel spectrogram first instead in chunksif
+                        audio is not transcribing properly compared to whisper, at the cost of more memory usage for
+                        long audio tracks (default: False)
 ```
 
 아래 명령은 각 인자들의 기본 값을 명시적으로 표시하여 실행해 본 것입니다. 
@@ -65,7 +77,9 @@ options:
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --subtitle_language=ko --skip_textlength=1 --translator none --text_split_size=1000 '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 물론 한국어로 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
+실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 다만 --translator의 기본은 none이라서 번역은 하지 않고 자막 추출만 하게 됩니다. 
+
+물론 한국어로 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
 ```
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
@@ -102,6 +116,24 @@ DeepL은 아직 국내에서 API는 사용할 수 없습니다. 다만,  https:/
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
 ```
+
+그러면 예를 들어 보겠습니다. --translator로는 deepl-translator를 사용하고 추출 방법은 stable-ts를 선택하는데, stable-ts의 demucs=True, vad=True, mel_first=True 옵션을 사용하고 싶다면 이렇게 하면 됩니다. 
+
+```
+(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
+(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --demucs --vad --mel_first --translator deepl-rapidapi --text_split_size 3000 'Y:\video_cut.mp4'
+```
+
+demucs, vad, mel_first에 관하여는 stable-ts의 개발자 팁에서는 다음과 같은 이야기가 있습니다. 
+- 음악에는 demucs=True, vad=True를 사용하지만 음악이 아닌 경우에도 작동합니다(단, vad의 경우 특정 언어만 지원한다고 되어 있음).
+- 오디오가 Whisper에 비해 제대로 추출되지 않는 경우, 긴 오디오 트랙의 경우 메모리 사용량을 늘어나지만 mel_first=True를 사용해 보세요.
+
+demucs와 vad를 사용하려면 다음 패키지도 설치하여야 합니다. 
+
+```
+(venv) C:\Users\loginid> pip install demucs PySoundFile
+(venv) C:\Users\loginid> pip install silero
+```  
 
 [윈도우10/11 기준 준비 작업]
 
