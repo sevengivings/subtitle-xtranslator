@@ -24,23 +24,26 @@ import urllib.request
 import json
 
 # stable-ts  
-def extract_audio_stable_whisper(model, audio_language, input_file_name, output_file_name): 
+def extract_audio_stable_whisper(model, condition_on_previous_text, stable_demucs, stable_vad, stable_mel_first, audio_language, input_file_name, output_file_name): 
     # Check if the file exists.
     if not os.path.exists(input_file_name):
         raise FileNotFoundError(f"The file {input_file_name} does not exist.")
 
+    print(f'demucs: {stable_demucs}, vad: {stable_vad}, mel_first: {stable_mel_first}')
     # Extract the audio from the video.
-    result = model.transcribe(verbose=True, word_timestamps=False, condition_on_previous_text=False, language=audio_language, audio=input_file_name)
+    result = model.transcribe(verbose=True, word_timestamps=False, condition_on_previous_text=condition_on_previous_text, \
+                              demucs=stable_demucs, vad=stable_vad, mel_first=stable_mel_first, \
+                              language=audio_language, audio=input_file_name)
     result.to_srt_vtt(output_file_name + ".srt", word_level=False) 
 
 # Whisper 
-def extract_audio_whisper(model, audio_language, input_file_name):
+def extract_audio_whisper(model, condition_on_previous_text, audio_language, input_file_name):
     # Check if the file exists.
     if not os.path.exists(input_file_name):
         raise FileNotFoundError(f"The file {input_file_name} does not exist.")
 
     temperature = tuple(np.arange(0, 1.0 + 1e-6, 0.2))  # copied from Whisper original code 
-    result = model.transcribe(input_file_name, temperature=temperature, verbose=True, word_timestamps=False, condition_on_previous_text=False, language=audio_language)
+    result = model.transcribe(input_file_name, temperature=temperature, verbose=True, word_timestamps=False, condition_on_previous_text=condition_on_previous_text, language=audio_language)
     output_dir = os.path.dirname(input_file_name)
     writer = get_writer("srt", output_dir)
     writer(result, input_file_name) 
@@ -355,7 +358,24 @@ if __name__ == "__main__":
     parser.add_argument("--skip_textlength", type=int, default=1, help="skip short text in the subtitles, useful for removing meaningless words")
     parser.add_argument("--translator", default="none", help="none, google, papago or deepl-rapidapi")
     parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
-    
+
+    parser.add_argument("--condition_on_previous_text", action='store_true',
+                        help="if True, provide the previous output of the model as a prompt for the next window; "
+                             "disabling may make the text inconsistent across windows, "
+                             "but the model becomes less prone to getting stuck in a failure loop")
+    # stable_ts only 
+    parser.add_argument('--demucs', action='store_true',
+                        help='stable-ts only, whether to reprocess the audio track with Demucs to isolate vocals/remove noise; '
+                             'pip install demucs PySoundFile; '
+                             'Demucs official repo: https://github.com/facebookresearch/demucs')
+    parser.add_argument('--vad', action='store_true',
+                        help='stable-ts only, whether to use Silero VAD to generate timestamp suppression mask; '
+                             'pip install silero; '
+                             'Official repo: https://github.com/snakers4/silero-vad')
+    parser.add_argument('--mel_first', action='store_true',
+                        help='stable-ts only, process entire audio track into log-Mel spectrogram first instead in chunks'
+                             'if audio is not transcribing properly compared to whisper, at the cost of more memory usage for long audio tracks')
+   
     args = parser.parse_args().__dict__
     framework: str = args.pop("framework")
     model_name: str = args.pop("model")
@@ -365,6 +385,13 @@ if __name__ == "__main__":
     skip_textlength: int = args.pop("skip_textlength")
     translator: str = args.pop("translator")
     text_split_size: int = args.pop("text_split_size")
+
+    use_condition_on_previous_text: bool = args.pop("condition_on_previous_text")
+
+    # stable_ts only
+    use_demucs: bool = args.pop("demucs")
+    use_vad: bool = args.pop("vad")
+    is_mel_first: bool = args.pop("mel_first")
 
     print("subtitle-xtranslator: AI subtitle extraction and translation tool")
     print("\nframework:" + framework + "\nmodel:" + model_name + "\ndevice:" + device  + "\naudio language:" + audio_language + "\nsubtitle language:" + subtitle_language  + "\nigonore n characters:" + str(skip_textlength) + "\ntranslator:" + translator + "\ntext_split_size:" + str(text_split_size))
@@ -390,9 +417,9 @@ if __name__ == "__main__":
         # Check if the file exists
         if not os.path.exists(output_file_name + ".srt"):           
             if framework == "stable-ts":   
-                extract_audio_stable_whisper(model, audio_language, input_file_name, output_file_name)
+                extract_audio_stable_whisper(model, use_condition_on_previous_text, use_demucs, use_vad, is_mel_first, audio_language, input_file_name, output_file_name)
             elif framework == "whisper":
-                extract_audio_whisper(model, audio_language, input_file_name)
+                extract_audio_whisper(model, use_condition_on_previous_text, audio_language, input_file_name)
         else: 
             print(_("[Warning] File already exists"))
 
