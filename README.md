@@ -9,23 +9,26 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
-[기능과 특징] 
+
+
+
+## [기능과 특징] 
 
 - 동영상에서 자막을 만들 수 있는 stable-ts 또는 Whisper 지원
 - 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL(Rapidapi버전) 번역 서비스 지원
 - 의미 없는 짧은 자막이나 반복되는 자막 제거 지원
 
-[한계]
+## [한계]
 
 음성 인식이 완전하지 않아서 누락되는 음성이나 잘못 인식될 수 있습니다. 프로페셔널한 용도로 사용은 권장하지 않습니다.
 stable-ts와 whisper 명령어로 했을 때와 이 프로그램을 사용했을 때, Whisper WebUI를 썼을 때 각각 자막의 품질이나 개수가 다를 수 있습니다(최적화 파라미터가 많아서 모두 알 수 없으며, 참고로 stable-ts는 자막 추출 용도로 최적화한 프로그램이기도 하지만 Whisper 오리지널에 비해 인식 누락이 있는 편입니다. 하지만, 없는데 추출된 귀신 소리, 무의미한 반복, 뒷부분 추출 안되는 등의 문제는 적은 편입니다.)
 
-[관련 프로그램 링크]
+## [관련 프로그램 링크]
 
 - stable-ts : GitHub - jianfch/stable-ts: ASR with reliable word-level timestamps using OpenAI's Whisper(https://github.com/jianfch/stable-ts)
 - Whisper : General-purpose speech recognition model(https://github.com/openai/whisper)
 
-[사용법] 
+## [사용법] 
 
 이 스크립트를 실행하려면 몇 가지 전제 조건을 준비해야 합니다(아래 섹션 참조 - [윈도우10/11 기준 준비 작업]). 
 
@@ -57,20 +60,35 @@ options:
                         none, google, papago or deepl-rapidapi (default: none)
   --text_split_size TEXT_SPLIT_SIZE
                         split the text into small lists to speed up the translation process (default: 1000)
+  --condition_on_previous_text
+                        if True, provide the previous output of the model as a prompt for the next window; disabling
+                        may make the text inconsistent across windows, but the model becomes less prone to getting
+                        stuck in a failure loop (default: False)
+  --demucs              stable-ts only, whether to reprocess the audio track with Demucs to isolate vocals/remove
+                        noise; pip install demucs PySoundFile; Demucs official repo:
+                        https://github.com/facebookresearch/demucs (default: False)
+  --vad                 stable-ts only, whether to use Silero VAD to generate timestamp suppression mask; pip install
+                        silero; Official repo: https://github.com/snakers4/silero-vad (default: False)
+  --mel_first           stable-ts only, process entire audio track into log-Mel spectrogram first instead in chunksif
+                        audio is not transcribing properly compared to whisper, at the cost of more memory usage for
+                        long audio tracks (default: False)
 ```
 
-아래 명령은 각 인자들의 기본 값을 명시적으로 표시하여 실행해 본 것입니다. 
+아래 명령은 각 인자들의 기본 값을 명시적으로 표시하여 실행해 본 것입니다. 일어로 된 영상에서 추출할 경우입니다. 
 
 ```
-(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --subtitle_language=ko --skip_textlength=1 --translator none --text_split_size=1000 '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
+(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --skip_textlength=1  '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 물론 한국어로 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
+실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 다만 --translator의 기본은 none이라서 번역은 하지 않고 자막 추출만 하게 됩니다. 
+
 ```
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-이 프로그램에 번역을 위해 API 키를 제공하려면 환경 변수를 사용해야 합니다. 
+물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
+
+번역기를 이용하기 위하여 API 키를 제공하려면 환경 변수를 사용 합니다. 
 
 파파고용 API 키 제공 방법은 다음과 같습니다. 먼저 개발자 등록을 하여 테스트 계정을 설정해야 합니다. 하루에 무료로 제공되는 번역량은 1만자입니다. 상용으로 전환할 경우 백만자당 2만원이 청구되는 것 같습니다. 
 
@@ -103,21 +121,42 @@ DeepL은 아직 국내에서 API는 사용할 수 없습니다. 다만,  https:/
 (venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
 ```
 
-[윈도우10/11 기준 준비 작업]
+그러면 예를 들어 보겠습니다. --translator로는 deepl-translator를 사용하고 추출 방법은 stable-ts를 선택하는데, stable-ts의 demucs=True, vad=True, mel_first=True 옵션을 사용하고 싶다면 이렇게 하면 됩니다. 영어로 되어 있는 동영상입니다. 
 
-1.파이썬 설치
+```
+(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
+(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --demucs --vad --mel_first --audio_language en --translator deepl-rapidapi --text_split_size 3000 'Y:\video_cut.mp4'
+```
+
+demucs, vad, mel_first에 관하여는 stable-ts의 개발자 팁에서는 다음과 같은 이야기가 있습니다. 
+- 음악에는 demucs=True, vad=True를 사용하지만 음악이 아닌 경우에도 작동합니다.
+- 오디오가 Whisper에 비해 제대로 추출되지 않는 경우, 긴 오디오 트랙의 경우 메모리 사용량을 늘어나지만 mel_first=True를 사용해 보세요.
+
+demucs와 vad를 사용하려면 다음 패키지도 설치하여야 합니다. 
+
+```
+(venv) C:\Users\loginid> pip install demucs PySoundFile
+(venv) C:\Users\loginid> pip install silero
+```  
+
+다만, demucs의 경우 동영상이 긴 경우 GPU메모리 많이 사용하며, 8GB VRAM에서는 안 될 수 있고(예: 2시간40분 MP4가 13GB VRAM을 요구), 추가 처리 시간(6~7분)을 필요로 합니다. vad도 마찬가지로 동영상을 처음부터 끝까지 탐색하므로 오래 걸립니다.  
+
+
+## [윈도우10/11 기준 준비 작업]
+
+### 1.파이썬 설치
 
 파이썬이 현재 3.11.3이 릴리즈 중이지만, 최신 버전이 그다지 중요하지 않으므로 아래 버전으로 설치를 합니다. 윈도우11의 명령 프롬프트나 파워쉘 아무데서나 python이라고 치면 실행될 수 있도록 하는 것이 목표입니다.
 
 https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe
 
-2.CUDA 설치
+### 2.CUDA 설치
 
 브라우저로 편리하게 이용이 가능한 Whisper WebUI판에서는 cuda 11.7을 requirements.txt에 명시를 해 놓아서 같은 버전으로 설치해 봅니다. 물론 11.8을 설치해도 잘 되었습니다. 설치 완료 후 cuda가 설치되어 있는 지 확인하려면 파워쉘(Windows PowerShell 앱)을 띄우고, nvidia-smi 라고 명령을 내려 보면 알 수 있습니다.
 
 https://developer.nvidia.com/cuda-11-7-1-download-archive?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_local
 
-3.파워쉘 실행
+### 3.파워쉘 실행
 
 윈도우키를 누르고 R키를 누르면 좌측에 실행 창이 나타납니다. 이곳에 "powershell"을 입력하고 확인을 누르면 파워쉘을 실행할 수 있습니다(이외에 다양한 방법으로 실행 가능).
 
@@ -133,7 +172,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 위 >>> 에서 나오기 위해서는 exit() 을 입력합니다.
 
-4.VENV 환경 만들어 주기 및 파이썬 패키지 설치하기
+### 4.VENV 환경 만들어 주기 및 파이썬 패키지 설치하기
 
 파이썬은 패키지를 필요할 때마다 설치하게 되는데, 시스템에 설치된 파이썬에 그냥 설치하다보면 가끔 뭔가가 꼬이게 되고 문제가 가끔 생기는데 아주 머리가 아픈 경우가 있습니다. 물론, 이 기능만 이용하겠다하면 상관없지만 그래도 제거가 편하도록 가상의 환경을 만들어 줍니다.
 
@@ -156,7 +195,7 @@ PS C:\Users\login_id> .\venv\Scripts\Activate.ps1
 (venv) PS C:\Users\login_id> pip install google-cloud-translate==2.0.1
 ```
 
-5.GPU버전의 pyTorch설치
+### 5.GPU버전의 pyTorch설치
 
 위 과정이 끝나면 바로 쓸 수 있기는 한데, CPU버전의 pyTorch가 설치되는 것 같습니다. 이번에는 GPU버전의 토치를 설치합니다. 아래 예는 cu117로 되어 있는데 cu118로 해도 잘 됩니다.
 
@@ -176,13 +215,13 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> exit()
 ```
 
-6.FFMPEG 설치 및 파이썬 인터프리터 상태에서 영상 자막 만들기
+### 6.FFMPEG 설치 및 파이썬 인터프리터 상태에서 영상 자막 만들기
 
 영상에서 음성을 추출을 하다보니 외부 프로그램이 하나 필요합니다.
 
 https://www.gyan.dev/ffmpeg/builds/#release-builds 에서 ffmpeg-release-essentials.zip 을 받아서 압축 해제한 후, 앞으로 작업할 디렉터리나 환경변수에서 Path가 설정되어 있는 곳에 복사하여도 됩니다. 그냥 C:\Users\login_id\venv\Scripts 밑에 복사하는 것이 속편하겠습니다. 
 
-7.짧은 영상을 파이썬 코드로 추출해 보기 
+### 7.짧은 영상을 파이썬 코드로 추출해 보기 
 
 짧은 영상 하나를 테스트하는 과정을 보여드립니다(실제로는 중간에 warning이 나오지만 작동에 문제는 없습니다).
 ```
@@ -202,7 +241,7 @@ Saved: C:\Users\login_id\20220902_131203.srt
 ```
 word_timestamps=True가 기본 값인데, 말하는 중 단어가 하이라이트 되는 기능이 있습니다. 2GB의 VRAM을 가진 그래픽카드라서 small 모델로 했는데, 몇 마디(불행랑->줄행랑, 진출하되겠지는 그냥 파도 소리가 자막화 되었네요)는 잘못 인식했네요. 8GB VRAM이라면 medium으로 하면 됩니다.
 
-8.subtitle-xtranslator.py 받아서 이용하기
+### 8.subtitle-xtranslator.py 받아서 이용하기
 
 만약 git를 설치해 두었다면 아래와 같이 받으면 됩니다. 그렇지 않다면 https://github.com/sevengivings/subtitle-xtranslator 에 접속해서 우측에 "<> CODE"라는 명령버튼이 보입니다. 버튼을 누르면 Download ZIP 메뉴를 통해 압축 파일로 받을 수 있고, 적당한 곳에 압축 해제한 후 이용할 수 있습니다.
 ```
@@ -210,7 +249,7 @@ word_timestamps=True가 기본 값인데, 말하는 중 단어가 하이라이�
 ```
 (주의) 만약 한글로 된 안내 메시지를 보려면 압축 파일의 locale 디렉토리도 필요합니다.
 
-[단일 exe로 만들기]
+## [단일 exe로 만들기]
 
 지금까지는 python .\subtitle-xtranslator.py로 실행을 했습니다. 다소 불편하므로 exe파일로 만든 후, venv\Scripts에 복사하여 아무 드라이브나 디렉토리에서도 실행할 수 있도록 해보겠습니다.
 ```
