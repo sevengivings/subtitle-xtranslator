@@ -74,20 +74,21 @@ options:
                         long audio tracks (default: False)
 ```
 
-아래 명령은 각 인자들의 기본 값을 명시적으로 표시하여 실행해 본 것입니다. 
+아래 명령은 각 인자들의 기본 값을 명시적으로 표시하여 실행해 본 것입니다. 일어로 된 영상에서 추출할 경우입니다. 
 
 ```
-(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --subtitle_language=ko --skip_textlength=1 --translator none --text_split_size=1000 '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
+(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --framework=stable-ts --model=medium --device=cuda --audio_language=ja --skip_textlength=1  '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
 실제로 위 명령의 기본값을 그대로 쓴 것이라서 인자(아규먼트)를 생략해도 됩니다. 다만 --translator의 기본은 none이라서 번역은 하지 않고 자막 추출만 하게 됩니다. 
 
-물론 한국어로 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
 ```
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-이 프로그램에 번역을 위해 API 키를 제공하려면 환경 변수를 사용해야 합니다. 
+물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
+
+번역기를 이용하기 위하여 API 키를 제공하려면 환경 변수를 사용 합니다. 
 
 파파고용 API 키 제공 방법은 다음과 같습니다. 먼저 개발자 등록을 하여 테스트 계정을 설정해야 합니다. 하루에 무료로 제공되는 번역량은 1만자입니다. 상용으로 전환할 경우 백만자당 2만원이 청구되는 것 같습니다. 
 
@@ -120,11 +121,11 @@ DeepL은 아직 국내에서 API는 사용할 수 없습니다. 다만,  https:/
 (venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
 ```
 
-그러면 예를 들어 보겠습니다. --translator로는 deepl-translator를 사용하고 추출 방법은 stable-ts를 선택하는데, stable-ts의 demucs=True, vad=True, mel_first=True 옵션을 사용하고 싶다면 이렇게 하면 됩니다. 
+그러면 예를 들어 보겠습니다. --translator로는 deepl-translator를 사용하고 추출 방법은 stable-ts를 선택하는데, stable-ts의 demucs=True, vad=True, mel_first=True 옵션을 사용하고 싶다면 이렇게 하면 됩니다. 영어로 되어 있는 동영상입니다. 
 
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
-(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --demucs --vad --mel_first --translator deepl-rapidapi --text_split_size 3000 'Y:\video_cut.mp4'
+(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --demucs --vad --mel_first --audio_language en --translator deepl-rapidapi --text_split_size 3000 'Y:\video_cut.mp4'
 ```
 
 demucs, vad, mel_first에 관하여는 stable-ts의 개발자 팁에서는 다음과 같은 이야기가 있습니다. 
