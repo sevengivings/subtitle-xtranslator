@@ -132,12 +132,14 @@ demucs, vad, mel_first에 관하여는 stable-ts의 개발자 팁에서는 다�
 - 음악에는 demucs=True, vad=True를 사용하지만 음악이 아닌 경우에도 작동합니다.
 - 오디오가 Whisper에 비해 제대로 추출되지 않는 경우, 긴 오디오 트랙의 경우 메모리 사용량을 늘어나지만 mel_first=True를 사용해 보세요.
 
-demucs와 vad를 사용하려면 다음 패키지도 설치하여야 합니다. 
+demucs와 vad를 사용하려면 다음 패키지들도 설치하여야 합니다. 
 
 ```
+(venv) C:\Users\loginid> pip install wheel 
 (venv) C:\Users\loginid> pip install demucs PySoundFile
 (venv) C:\Users\loginid> pip install silero
 ```  
+만약 설치 중 오류가 나면 https://visualstudio.microsoft.com/ko/visual-cpp-build-tools/ 를 설치할 필요가 있습니다. 
 
 다만, demucs의 경우 동영상이 긴 경우 GPU메모리 많이 사용하며, 8GB VRAM에서는 안 될 수 있고(예: 2시간40분 MP4가 13GB VRAM을 요구), 추가 처리 시간(6~7분)을 필요로 합니다. vad도 마찬가지로 동영상을 처음부터 끝까지 탐색하므로 오래 걸립니다.  
 
@@ -183,6 +185,11 @@ Type "help", "copyright", "credits" or "license" for more information.
 ```
 PS C:\Users\login_id> python -m venv venv 
 PS C:\Users\login_id> .\venv\Scripts\Activate.ps1
+```
+만약 .ps1가 실행이 안되면 파워쉘을 관리자 권한으로 실행한 후, 아래 명령을 한번 실행해 줍니다. 
+
+```
+PS C:\WINDOWS\system32> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 ```
 
 위와 같이 해주면, 가상 환경 준비가 끝납니다. 처음에 실행할 때 보안 관련 문의가 나오는데 Always를 선택해 줍니다. venv가 성공적으로 실행되면 프롬프트가 바뀝니다. 
