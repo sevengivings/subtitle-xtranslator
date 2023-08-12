@@ -148,15 +148,17 @@ demucs와 vad를 사용하려면 다음 패키지들도 설치하여야 합니�
 
 ### 1.파이썬 설치
 
-파이썬이 현재 3.11.3이 릴리즈 중이지만, 최신 버전이 그다지 중요하지 않으므로 아래 버전으로 설치를 합니다. 윈도우11의 명령 프롬프트나 파워쉘 아무데서나 python이라고 치면 실행될 수 있도록 하는 것이 목표입니다.
+파이썬은 최신 버전을 설치를 합니다. 윈도우11의 명령 프롬프트나 파워쉘 아무데서나 python이라고 치면 실행될 수 있도록 하는 것이 목표입니다.
 
-https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe
+https://www.python.org/downloads 
+https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe
 
 ### 2.CUDA 설치
 
-브라우저로 편리하게 이용이 가능한 Whisper WebUI판에서는 cuda 11.7을 requirements.txt에 명시를 해 놓아서 같은 버전으로 설치해 봅니다. 물론 11.8을 설치해도 잘 되었습니다. 설치 완료 후 cuda가 설치되어 있는 지 확인하려면 파워쉘(Windows PowerShell 앱)을 띄우고, nvidia-smi 라고 명령을 내려 보면 알 수 있습니다.
+최신 판을 찾아서 설치합니다. 설치 완료 후 cuda가 설치되어 있는 지 확인하려면 파워쉘(Windows PowerShell 앱)을 띄우고, nvidia-smi 라고 명령을 내려 보면 알 수 있습니다.
 
-https://developer.nvidia.com/cuda-11-7-1-download-archive?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_local
+https://developer.nvidia.com/cuda-toolkit
+https://developer.download.nvidia.com/compute/cuda/12.2.1/local_installers/cuda_12.2.1_536.67_windows.exe 
 
 ### 3.파워쉘 실행
 
@@ -174,7 +176,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 위 >>> 에서 나오기 위해서는 exit() 을 입력합니다.
 
-### 4.VENV 환경 만들어 주기 및 파이썬 패키지 설치하기
+### 4.VENV 환경 만들어 주기
 
 파이썬은 패키지를 필요할 때마다 설치하게 되는데, 시스템에 설치된 파이썬에 그냥 설치하다보면 가끔 뭔가가 꼬이게 되고 문제가 가끔 생기는데 아주 머리가 아픈 경우가 있습니다. 물론, 이 기능만 이용하겠다하면 상관없지만 그래도 제거가 편하도록 가상의 환경을 만들어 줍니다.
 
@@ -194,7 +196,28 @@ PS C:\WINDOWS\system32> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 위와 같이 해주면, 가상 환경 준비가 끝납니다. 처음에 실행할 때 보안 관련 문의가 나오는데 Always를 선택해 줍니다. venv가 성공적으로 실행되면 프롬프트가 바뀝니다. 
 
-이 상태에서 향후 필요한 패키지들을 설치합니다.
+
+### 5.GPU버전의 pyTorch설치 및 관련 패키지들 설치
+
+GPU버전의 토치를 설치합니다. 
+
+```
+(venv) PS C:\Users\login_id> pip install torch==2.0.1+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+```
+
+잘 설치가 되었는 지 확인하기 위해 python을 입력하고 간단한 프로그램을 짭니다. (주의) "version" 은 글자의 좌우에 언더바가 2개씩 있습니다.
+
+```
+(venv) PS C:\Users\login_id> python
+Python 3.11.4 [MSC v.1929 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import torch
+>>> print(torch.__version__)
+2.0.1+cu118
+>>> exit()
+```
+
+이 상태에서 향후 필요한 패키지들을 설치합니다. 아래의 git+ 명령을 쓰려면 https://git-scm.com/download/win 의 설치가  필요합니다. 
 
 ```
 (venv) PS C:\Users\login_id> pip install -U git+https://github.com/jianfch/stable-ts.git
@@ -202,24 +225,10 @@ PS C:\WINDOWS\system32> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 (venv) PS C:\Users\login_id> pip install google-cloud-translate==2.0.1
 ```
 
-### 5.GPU버전의 pyTorch설치
-
-위 과정이 끝나면 바로 쓸 수 있기는 한데, CPU버전의 pyTorch가 설치되는 것 같습니다. 이번에는 GPU버전의 토치를 설치합니다. 아래 예는 cu117로 되어 있는데 cu118로 해도 잘 됩니다.
+혹은 같이 첨부된 requirements.txt를 이용할 수도 있습니다. 
 
 ```
-(venv) PS C:\Users\login_id> pip install torch==2.0.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
-```
-
-잘 설치가 되었는 지 확인하기 위해 python을 입력하고 간단한 프로그램을 짭니다. (주의) "version" 은 글자의 좌우에 언더바가 2개씩 있습니다.
-
-```
-(venv) PS C:\Users\login_id> python
-Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)] on win32
-Type "help", "copyright", "credits" or "license" for more information.
->>> import torch
->>> print(torch.__version__)
-2.0.1+cu117
->>> exit()
+(venv) PS C:\Users\login_id> pip install -r requirements.txt 
 ```
 
 ### 6.FFMPEG 설치 및 파이썬 인터프리터 상태에서 영상 자막 만들기
