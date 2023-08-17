@@ -197,6 +197,33 @@ def translate_text_deepl_rapidapi(audio, target, text):
     
     return translated_list
 
+# for DeepL API translation, check if DEEPL_API_KEY is set in environment variables.
+# How to set DeepL API key in PowerShell : Set-Item -Path env:DEEPL_API_KEY -Value "your-id"
+# How to remove DeepL API key in PowerShell : Remove-Item -Path env:DEEPL_API_KEY
+def translate_text_deepl_api(deepl_api_key, subtitle_language, split_list): 
+    try: 
+        import deepl
+    except ModuleNotFoundError:
+        print(
+            "Please install deepl python package by running: pip install --upgrade deepl"
+        )
+        sys.exit(1)
+
+    translator = deepl.Translator(deepl_api_key)    
+
+    usage = translator.get_usage()
+    if usage.any_limit_reached:
+        print(_('[Error] DeepL API Translation limit reached.'))
+        sys.exit(1) 
+    if usage.character.valid:
+        print(f"Character usage: {usage.character.count} of {usage.character.limit}")
+    if usage.document.valid:
+        print(f"Document usage: {usage.document.count} of {usage.document.limit}")
+
+    result = translator.translate_text(split_list, target_lang=subtitle_language.upper())
+
+    return result 
+
 # removes unnecessary short and repeated characters from the subtitle text and translate using Google Cloud Translate 
 def translate_file(audio_language, subtitle_language, translator, text_split_size, input_file_name, skip_textlength):
     # Check if the file exists.
@@ -304,6 +331,19 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
             string = '\n'.join(split_list)       
             result = translate_text_deepl_rapidapi(audio_language, subtitle_language, string)   
             translated_list = result  
+        elif translator == "deepl-api":
+            deepl_api_key = ""
+            try: 
+                deepl_api_key = os.environ['DEEPL_API_KEY']
+                print(_("[Info] Using DeepL API"))
+            except KeyError:
+                print(_("[Error] Invalid DeepL API key"))
+                sys.exit(1)
+
+            result = translate_text_deepl_api(deepl_api_key, subtitle_language, split_list)
+            translated_list = []  
+            for translation in result:
+                translated_list.append(translation.text)            
         else: 
             print(_("[Error] Invalid translator"))
             sys.exit(1)               
@@ -317,7 +357,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                 
         with open(output_file_name + "_translated.srt", "a", encoding="utf-8") as fout:       
             for string in translated_list: 
-                fout.write(f"{i+1}\n")
+                fout.write(f"{i}\n")
                 fout.write(f"{time_sync_data_list[i]}\n")
                 fout.write(f"{string.strip()}\n")
                 if i != len(time_sync_data_list)-1:
@@ -358,7 +398,7 @@ if __name__ == "__main__":
     parser.add_argument("--audio_language", type=str, default="ja", help="language spoken in the audio, specify None to perform language detection")
     parser.add_argument("--subtitle_language", type=str, default="ko", help="subtitle target language")
     parser.add_argument("--skip_textlength", type=int, default=1, help="skip short text in the subtitles, useful for removing meaningless words")
-    parser.add_argument("--translator", default="none", help="none, google, papago or deepl-rapidapi")
+    parser.add_argument("--translator", default="none", help="none, google, papago, deepl-api or deepl-rapidapi")
     parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
 
     parser.add_argument("--condition_on_previous_text", action='store_true',
