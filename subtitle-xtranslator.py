@@ -7,6 +7,7 @@
 # - ffmpeg.exe (https://www.ffmpeg.org/) for stable-ts and whisper 
 # - python-docx
 # - google-cloud-translate for ADC credential
+# - deepl
 
 # OS: Windows 10/11 
 
