@@ -1,7 +1,7 @@
 # subtitle-xtranslator
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/main/README.en.md)
 
-A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago and DeepL-Rapidapi translation API. 
+A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago, DeepL API and DeepL-Rapidapi translation API. 
 
 OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다. 
 
@@ -15,13 +15,14 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 ## [기능과 특징] 
 
 - 동영상에서 자막을 만들 수 있는 stable-ts 또는 Whisper 지원
-- 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL(Rapidapi버전) 번역 서비스 지원
+- 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL 및 DeepL Rapidapi버전 번역 서비스 지원
 - 의미 없는 짧은 자막이나 반복되는 자막 제거 지원
 
 ## [한계]
 
-음성 인식이 완전하지 않아서 누락되는 음성이나 잘못 인식될 수 있습니다. 프로페셔널한 용도로 사용은 권장하지 않습니다.
-stable-ts와 whisper 명령어로 했을 때와 이 프로그램을 사용했을 때, Whisper WebUI를 썼을 때 각각 자막의 품질이나 개수가 다를 수 있습니다(최적화 파라미터가 많아서 모두 알 수 없으며, 참고로 stable-ts는 자막 추출 용도로 최적화한 프로그램이기도 하지만 Whisper 오리지널에 비해 인식 누락이 있는 편입니다. 하지만, 없는데 추출된 귀신 소리, 무의미한 반복, 뒷부분 추출 안되는 등의 문제는 적은 편입니다.)
+- 음성 인식이 완전하지 않아서 누락되는 음성이나 잘못 인식될 수 있습니다. 프로페셔널한 용도로 사용은 권장하지 않습니다.
+- stable-ts와 whisper 명령어로 했을 때와 이 프로그램을 사용했을 때, Whisper WebUI를 썼을 때 각각 자막의 품질이나 개수가 다를 수 있습니다(참고로 stable-ts는 자막 추출 용도로 최적화한 프로그램이기도 하지만 Whisper 오리지널에 비해 인식 누락이 있는 편입니다. 하지만, 없는데 추출된 귀신 소리, 무의미한 반복, 뒷부분 추출 안되는 등의 문제는 적은 편입니다.)
+- 유료로 번역 API를 사용하는 경우 사전에 본 스크립트를 충분히 테스트한 후 문제가 없을 때 이용 하시기 바랍니다. 잠재적인 버그나 알 수 없는 이유로 생길 수 있는 피해에 대해 책임지지 않습니다. 
 
 ## [관련 프로그램 링크]
 
@@ -57,7 +58,7 @@ options:
   --skip_textlength SKIP_TEXTLENGTH
                         skip short text in the subtitles, useful for removing meaningless words (default: 1)
   --translator TRANSLATOR
-                        none, google, papago or deepl-rapidapi (default: none)
+                        none, google, papago, deepl-api or deepl-rapidapi (default: none)
   --text_split_size TEXT_SPLIT_SIZE
                         split the text into small lists to speed up the translation process (default: 1000)
   --condition_on_previous_text
@@ -111,7 +112,19 @@ Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생
 (venv) C:\Users\loginid> Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
 ```
 
-DeepL은 아직 국내에서 API는 사용할 수 없습니다. 다만,  https://rapidapi.com/splintPRO/api/deepl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
+DeepL은 직접적인 방식과 간접적인 방식이 있습니다. 
+
+직접적인 방식은 아래와 같이 키를 환경 변수로 제공하면 됩니다. 월 50만자까지 무료로 이용 가능합니다.  
+```
+(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_API_KEY -Value "your_api_key"
+```
+
+DeepL API 번역을 이용하려면 최초 1회 관련 패키지를 설치해 주어야 합니다. 
+```
+(venv) C:\Users\loginid> pip install --upgrade deepl
+```
+
+또한 https://rapidapi.com/splintPRO/api/deepl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
 
 신용카드를 등록한 후, 무료로 월 100번의 호출과 300,000만자까지 지원됩니다. 1회 호출당 3천글자까지 가능합니다. 무료 계정이라고 해도 호출 회수가 100회에서 넘어가면 과금이 되므로 주의해야 합니다. 
 
