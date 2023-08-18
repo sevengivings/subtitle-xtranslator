@@ -338,7 +338,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                 deepl_api_key = os.environ['DEEPL_API_KEY']
                 print(_("[Info] Using DeepL API"))
             except KeyError:
-                print(_("[Error] Invalid DeepL API key"))
+                print(_("[Error] Please set DEEPL_API_KEY environment variable."))
                 sys.exit(1)
 
             result = translate_text_deepl_api(deepl_api_key, subtitle_language, split_list)
