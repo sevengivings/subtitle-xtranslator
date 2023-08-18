@@ -87,7 +87,7 @@ options:
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google 이나 --translator papago 혹은 --translator deepl-rapidapi 를 생략하면 안됩니다. 
+물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google, --translator papago, --translator deepl-api, --translator deepl-rapidapi 중 하나를 사용하면 됩니다. 
 
 번역기를 이용하기 위하여 API 키를 제공하려면 환경 변수를 사용 합니다. 
 
