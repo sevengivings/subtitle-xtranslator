@@ -154,7 +154,7 @@ def translate_text_papago(audio, target, text):
     else:
         print(_("[Error] Request failed with status code:") + rescode)
 
-# https://rapidapi.com/splintPRO/api/deepl-translator
+# https://rapidapi.com/splintPRO/api/dpl-translator
 # free: 100 calls per month, 3000 characters per call, 300,000 characters per month 
 # PowerShell 
 # Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key"
