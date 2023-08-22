@@ -166,7 +166,7 @@ def translate_text_deepl_rapidapi(audio, target, text):
         print(_("[Error] Please set DEEPL_RAPIDAPI_KEY environment variables."))
         sys.exit(1)
         
-    url = f'https://deepl-translator.p.rapidapi.com/translate'
+    url = f'https://dpl-translator.p.rapidapi.com/translate'
 
     text = text
     target_language = target.upper() 
@@ -181,7 +181,7 @@ def translate_text_deepl_rapidapi(audio, target, text):
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": api_key,
-        "X-RapidAPI-Host": "deepl-translator.p.rapidapi.com"
+        "X-RapidAPI-Host": "dpl-translator.p.rapidapi.com"
     }   
 
     response = requests.post(url, json=payload, headers=headers)
