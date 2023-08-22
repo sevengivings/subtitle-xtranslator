@@ -1,7 +1,7 @@
 # subtitle-xtranslator
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/main/README.en.md)
 
-A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago, DeepL API and DeepL-Rapidapi translation API. 
+A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago, DeepL API and dpl-Rapidapi translation API. 
 
 OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다. 
 
@@ -124,7 +124,7 @@ DeepL API 번역을 이용하려면 최초 1회 관련 패키지를 설치해 �
 (venv) C:\Users\loginid> pip install --upgrade deepl
 ```
 
-또한 https://rapidapi.com/splintPRO/api/deepl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
+또한 https://rapidapi.com/splintPRO/api/dpl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
 
 신용카드를 등록한 후, 무료로 월 100번의 호출과 300,000만자까지 지원됩니다. 1회 호출당 3천글자까지 가능합니다. 무료 계정이라고 해도 호출 회수가 100회에서 넘어가면 과금이 되므로 주의해야 합니다. 
 
