@@ -233,7 +233,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> exit()
 ```
 
-이 상태에서 향후 필요한 패키지들을 설치합니다. 아래의 git+ 명령을 쓰려면 https://git-scm.com/download/win 의 설치가  필요합니다. 
+이 상태에서 향후 필요한 패키지들을 설치합니다. 아래의 git+ 명령을 쓰려면 https://git-scm.com/download/win 의 설치가  필요합니다. 아래 명령은 항상 최신 버전을 설치하게 해줍니다. 
 
 ```
 (venv) PS C:\Users\login_id> pip install -U git+https://github.com/jianfch/stable-ts.git
@@ -245,6 +245,12 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ```
 (venv) PS C:\Users\login_id> pip install -r requirements.txt 
+```
+
+참고로, 그 동안 테스트할 때에 stable-ts는 주로 2.7.0으로 사용 중(최신은 2.9.0)인데, 아래 명령을 통해 특정 버전을 설치할 수 있을 것입니다.(https://pypi.org/project/stable-ts/2.7.0/)
+
+```
+pip install stable-ts==2.7.0
 ```
 
 ### 6.FFMPEG 설치 및 파이썬 인터프리터 상태에서 영상 자막 만들기
