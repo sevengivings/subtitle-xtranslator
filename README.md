@@ -264,10 +264,10 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 (venv) PS C:\Users\login_id> pip install -r requirements.txt 
 ```
 
-참고로, 그 동안 테스트할 때에 stable-ts는 주로 2.7.0으로 사용 중(최신은 2.9.0)인데, 아래 명령을 통해 특정 버전을 설치할 수 있을 것입니다.(https://pypi.org/project/stable-ts/2.7.0/)
+참고로, 그동안 테스트할 때 stable-ts는 주로 2.6.0으로 사용 중(최신은 2.9.0)인데, 아래 명령을 통해 특정 버전을 설치할 수 있을 것입니다.(https://pypi.org/project/stable-ts/2.6.0/)  (예: small / cuda 모델의 경우 한국어 인식에서는 2.6.0이 잘되었습니다. 2.9.0에서는 한국어가 다 깨져서 나오는데 좀 더 살펴보아야겠습니다.) 
 
 ```
-pip install stable-ts==2.7.0
+pip install stable-ts==2.6.0
 ```
 
 ### 6.FFMPEG 설치 및 파이썬 인터프리터 상태에서 영상 자막 만들기
