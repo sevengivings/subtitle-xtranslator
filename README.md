@@ -28,7 +28,7 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 
 - stable-ts : GitHub - jianfch/stable-ts: ASR with reliable word-level timestamps using OpenAI's Whisper(https://github.com/jianfch/stable-ts)
 - Whisper : General-purpose speech recognition model(https://github.com/openai/whisper)
-- faster-whisper : https://github.com/guillaumekln/faster-whisper 
+- faster-whisper : reimplementation of whisper using CTranslate2(https://github.com/guillaumekln/faster-whisper) 
 
 ## [사용법] 
 
