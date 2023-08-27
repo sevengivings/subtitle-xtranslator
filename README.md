@@ -3,14 +3,14 @@
 
 A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago, DeepL API and dpl-Rapidapi translation API. 
 
-OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다. 
+OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts 및 faster-whisper를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다.
 
 OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제작이 매우 편리해졌고, 구글과 네이버, DeepL은 인공지능 기반의 번역 서비스를 제공하고 있습니다.
 
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
-
-
+## [최신 버전업 내용]
+- 2023-08-27 faster-whisper 지원 추가로 적은 VRAM(예: MX150 2GB)을 가진 노트북에서도 medium모델 가동이 가능(공유 VRAM이 있는 경우)합니다. 다만, cuDNN 및 cuBLAS가 필요합니다. Quantization로 int8을 기본 값으로 지정해 두었습니다. 비록 처리 속도가 느리지만 CPU로만 이용할 경우에 faster-whisper가 좋은 선택이 될 것으로 보입니다.   
 
 ## [기능과 특징] 
 
@@ -48,7 +48,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --framework FRAMEWORK
-                        name of the stable-ts or Whisper framework to use (default: stable-ts)
+                        name of the stable-ts, whisper or faster-whisper framework to use (default: stable-ts)
   --model MODEL         tiny, base, small, medium, large model to use (default: medium)
   --device DEVICE       device to use for PyTorch inference (default: cuda)
   --audio_language AUDIO_LANGUAGE
@@ -174,6 +174,8 @@ https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe
 https://developer.nvidia.com/cuda-toolkit
 https://developer.download.nvidia.com/compute/cuda/12.2.1/local_installers/cuda_12.2.1_536.67_windows.exe 
 
+만약 faster-whisper를 사용하려면 cuDNN 및 cuBLAS의 설치가 필요합니다. cuDNN은 NVIDIA 개발자 계정이 필요한데, cudnn-windows-x86_64-8.9.4.25_cuda12-archive.zip의 압축을 해제 후  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2에 덮어 써주면 설치가 됩니다. cuBLAS는 아래에 venv 환경이 만들어진 후 pip install nvidia-cublas-cu12 명령을 통해 설치됩니다. 
+
 ### 3.파워쉘 실행
 
 윈도우키를 누르고 R키를 누르면 좌측에 실행 창이 나타납니다. 이곳에 "powershell"을 입력하고 확인을 누르면 파워쉘을 실행할 수 있습니다(이외에 다양한 방법으로 실행 가능).
@@ -253,8 +255,8 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 이 상태에서 향후 필요한 패키지들을 설치합니다. 아래의 git+ 명령을 쓰려면 https://git-scm.com/download/win 의 설치가  필요합니다. 아래 명령은 항상 최신 버전을 설치하게 해줍니다. 
 
 ```
-(venv) PS C:\Users\login_id> pip install -U git+https://github.com/jianfch/stable-ts.git
 (venv) PS C:\Users\login_id> pip install git+https://github.com/openai/whisper.git
+(venv) PS C:\Users\login_id> pip install -U git+https://github.com/jianfch/stable-ts.git
 (venv) PS C:\Users\login_id> pip install google-cloud-translate==2.0.1
 ```
 
@@ -264,10 +266,17 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 (venv) PS C:\Users\login_id> pip install -r requirements.txt 
 ```
 
-참고로, 그동안 테스트할 때 stable-ts는 주로 2.6.0으로 사용 중(최신은 2.9.0)인데, 아래 명령을 통해 특정 버전을 설치할 수 있을 것입니다.(https://pypi.org/project/stable-ts/2.6.0/)  (예: small / cuda 모델의 경우 한국어 인식에서는 2.6.0이 잘되었습니다. 2.9.0에서는 한국어가 다 깨져서 나오는데 좀 더 살펴보아야겠습니다.) 
+참고로, 그동안 테스트할 때 stable-ts는 주로 2.6.2를 사용 중(최신은 2.9.0)인데, 아래 명령을 통해 특정 버전을 설치할 수 있을 것입니다.(https://pypi.org/project/stable-ts/2.6.2/)  (예: small / cuda 모델의 경우 한국어 인식에서는 2.6.2가 잘되었습니다. 2.9.0에서는 한국어가 다 깨져서 나오는데 좀 더 살펴보아야겠습니다.) 
 
 ```
-pip install stable-ts==2.6.0
+pip install stable-ts==2.6.2
+```
+
+만약 faster-whisper를 사용할 예정이라면, 아래 명령을 추가로 진행해 줍니다. 
+
+```
+pip install nvidia-cublas-cu12
+pip install faster-whisper
 ```
 
 ### 6.FFMPEG 설치 및 파이썬 인터프리터 상태에서 영상 자막 만들기
