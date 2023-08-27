@@ -14,7 +14,7 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 
 ## [기능과 특징] 
 
-- 동영상에서 자막을 만들 수 있는 stable-ts 또는 Whisper 지원
+- 동영상에서 자막을 만들 수 있는 stable-ts, whisper 또는 faster-whisper 지원
 - 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL 및 DeepL Rapidapi버전 번역 서비스 지원
 - 의미 없는 짧은 자막이나 반복되는 자막 제거 지원
 
