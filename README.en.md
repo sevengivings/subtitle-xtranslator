@@ -154,7 +154,7 @@ Install the required packages. If you want to use "git+" command, Git should be 
 ```
 (venv) PS C:\Users\login_id> pip install git+https://github.com/openai/whisper.git
 (venv) PS C:\Users\login_id> pip install -U git+https://github.com/jianfch/stable-ts.git
-(venv) PS C:\Users\login_id> pip install google-cloud-translate==2.0.1
+(venv) PS C:\Users\login_id> pip install google-cloud-translate
 (venv) PS C:\Users\login_id> pip install --upgrade deepl
 ```
 
