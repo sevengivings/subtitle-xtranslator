@@ -259,7 +259,7 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 ```
 (venv) PS C:\Users\login_id> pip install git+https://github.com/openai/whisper.git
 (venv) PS C:\Users\login_id> pip install -U git+https://github.com/jianfch/stable-ts.git
-(venv) PS C:\Users\login_id> pip install google-cloud-translate==2.0.1
+(venv) PS C:\Users\login_id> pip install google-cloud-translate
 ```
 
 혹은 같이 첨부된 requirements.txt를 이용할 수도 있습니다. 
