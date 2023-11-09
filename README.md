@@ -10,7 +10,7 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
 ## [최신 버전업 내용]
-- 2023-11-09 윈도우에서는 install_venv.bat를 실행하여 파이썬 venv 환경을 쉽게 설치할 수 있습니다. 
+- 2023-11-09 윈도우에서는 install_venv.bat를 실행하여 파이썬 venv 환경을 쉽게 설치할 수 있습니다(주의: 아래 https://github.com/sevengivings/subtitle-xtranslator#%EC%9C%88%EB%8F%84%EC%9A%B01011-%EA%B8%B0%EC%A4%80-%EC%A4%80%EB%B9%84-%EC%9E%91%EC%97%85 의 내용 중 4번과 5번의 내용입니다. 그 이전과 이후 단계는 직접 작업하셔야 합니다.) 
 
 - 2023-11-08 Google Colab에서 실행해 볼 수 있도록 .ipynb 파일을 추가하였습니다. Colab에서는 github에서 불러온 경우 사본으로 저장 한 후에 수정이 가능하므로 DEEPL_API_KEY 값을 넣어 줄 수 있고 자막 추출 후 번역까지 진행할 수 있습니다. 넣지 않아도 자막 추출은 가능합니다. audio_langugate와 subtitle_language 값을 적절히 바꾸면 됩니다(ko, en, ja, fr, cn 등등).    
 
