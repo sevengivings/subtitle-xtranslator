@@ -10,8 +10,11 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
 ## [최신 버전업 내용]
-- 2023-08-27 faster-whisper 지원 추가로 적은 VRAM(예: MX150 2GB)을 가진 노트북에서도 medium모델 가동이 가능(공유 VRAM이 있는 경우)합니다. 다만, cuDNN 및 cuBLAS가 필요합니다. Quantization로 int8을 기본 값으로 지정해 두었습니다. 비록 처리 속도가 느리지만 CPU로만 이용할 경우에 faster-whisper가 좋은 선택이 될 것으로 보입니다.   
+- 2023-11-09 윈도우에서는 install_venv.bat를 실행하여 파이썬 venv 환경을 쉽게 설치할 수 있습니다. 
+
 - 2023-11-08 Google Colab에서 실행해 볼 수 있도록 .ipynb 파일을 추가하였습니다. Colab에서는 github에서 불러온 경우 사본으로 저장 한 후에 수정이 가능하므로 DEEPL_API_KEY 값을 넣어 줄 수 있고 자막 추출 후 번역까지 진행할 수 있습니다. 넣지 않아도 자막 추출은 가능합니다. audio_langugate와 subtitle_language 값을 적절히 바꾸면 됩니다(ko, en, ja, fr, cn 등등).    
+
+- 2023-08-27 faster-whisper 지원 추가로 적은 VRAM(예: MX150 2GB)을 가진 노트북에서도 medium모델 가동이 가능(공유 VRAM이 있는 경우)합니다. 다만, cuDNN 및 cuBLAS가 필요합니다. Quantization로 int8을 기본 값으로 지정해 두었습니다. 비록 처리 속도가 느리지만 CPU로만 이용할 경우에 faster-whisper가 좋은 선택이 될 것으로 보입니다.   
 
 ## [기능과 특징] 
 
