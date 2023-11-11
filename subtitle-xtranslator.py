@@ -569,6 +569,8 @@ if __name__ == "__main__":
             print (_("[Info] final srt file is saved"))
         else: 
             print(_("[Info] translator is none, so exit."))
+
+        print("[Info] Processed: " + input_file_name)
     
     print(_("[Info] Done"))
 
