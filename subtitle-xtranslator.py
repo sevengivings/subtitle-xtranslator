@@ -295,6 +295,9 @@ def translate_text_deepl_api(deepl_api_key, subtitle_language, split_list):
     if usage.document.valid:
         print(f"Document usage: {usage.document.count} of {usage.document.limit}")
 
+    if subtitle_language.upper() == "EN":
+        subtitle_language = "EN-US"
+        
     result = translator.translate_text(split_list, target_lang=subtitle_language.upper())
 
     return result 
