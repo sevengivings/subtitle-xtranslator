@@ -48,4 +48,4 @@ interface = gr.Interface(
 )
 
 if __name__ == "__main__":
-    interface.launch(show_api=False) 
+    interface.launch(show_api=False, share=True) 
