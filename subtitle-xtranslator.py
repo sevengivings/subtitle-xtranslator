@@ -564,6 +564,11 @@ if __name__ == "__main__":
             if skip_textlength < 0:
                 skip_textlength = 0 
                 
+            try: 
+                os.unlink (output_file_name + "_original.srt")
+            except FileNotFoundError: 
+                pass
+
             translate_file(audio_language, subtitle_language, translator, text_split_size, output_file_name + ".srt", skip_textlength)
             
             # Change the name of final srt same as video file name 
