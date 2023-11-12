@@ -10,7 +10,7 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
 ## [최신 버전업 내용]
-- 2023-11-12 아래 WebUI(Gradio.app)로 만든 app.py는 Colab에서도 테스트 해 볼 수 있습니다. 
+- 2023-11-12 아래 WebUI(Gradio.app)로 만든 app.py는 Colab에서도 테스트 해 볼 수 있습니다. 아직은 아주 작은 길이만 가능합니다. 좀 더 개선 중이예요... 
 
 - 2023-11-11 WebUI를 위한 아주 기초적인 앱을 만들어 보았습니다. 명령프롬프트나 파워쉘에서 venv 환경을 실행(activate.bat or activate.ps1)한 상태에서 pip install gradio를 한번 해준 후 python app.py를 실행하고 링크를 Ctrl 누른 채로 마우스 클릭해주시면 됩니다. 임시 폴더로 mp4를 복사하여 작업하게 되어 있어 오래 걸리므로 ffmpeg -i .\input.mp4 -vn -ab 128k .\output.mp3 를 통해 mp3로 만들어 준 후 작업하는 것이 좋겠습니다. 
 
