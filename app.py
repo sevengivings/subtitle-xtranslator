@@ -1,16 +1,28 @@
 import gradio as gr
 import os
+import asyncio
+import subprocess
+import locale 
 
-def subtitle_xtranslator(framework, model, device, audio_language, subtitle_language, skip_textlength, translator, translator_api_key, audio_file):
+async def subtitle_xtranslator(framework, model, device, audio_language, subtitle_language, skip_textlength, translator, translator_api_key, audio_file, progress=gr.Progress()):
   os.environ["DEEPL_API_KEY"] = translator_api_key
+  os.environ['PYTHONIOENCODING'] = 'utf-8'
 
   command = f"python subtitle-xtranslator.py --framework {framework} --model {model} --device {device} --audio_language {audio_language} --subtitle_language {subtitle_language} --skip_textlength {skip_textlength} --translator {translator} {audio_file}"
 
-  output = os.popen(command).readlines()
+  proc = await asyncio.create_subprocess_shell(command, stdout=subprocess.PIPE) 
   subtitle = ""
   logs = "" 
   lines = [] 
-  for line in output:
+  download_link = "" 
+  
+  while True:
+    line = await proc.stdout.readline()
+    if not line: 
+      break 
+
+    line = str(line, encoding="utf-8")
+
     if line.startswith("[Info] Processed: "):
       # extract file name without extension from audio_file, and add '.srt' 
       subtitle_file = audio_file.rsplit(".", 1)[0] + '.srt'
@@ -40,12 +52,12 @@ interface = gr.Interface(
     ],
     outputs=[
         gr.Textbox(label="Subtitles"),
-        gr.Textbox(label="logs"),
+        gr.Textbox(label="logs"), 
         gr.File(label="Download Subtitles"),
     ],
     title="Subtitle XTranslator",
-    description="Extracts subtitles and translates .srt using subtitle-xtranslator.py."
+    description="Extracts subtitles and translates .srt using subtitle-xtranslator.py.",
 )
 
 if __name__ == "__main__":
-    interface.launch(show_api=False, share=True) 
+    interface.queue().launch(show_api=False, share=True) 
