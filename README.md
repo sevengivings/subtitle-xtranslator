@@ -226,7 +226,7 @@ PS C:\WINDOWS\system32> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 ### 5.GPU버전의 pyTorch설치 및 관련 패키지들 설치
 
-GPU버전의 토치를 설치합니다. 
+GPU버전의 토치를 설치합니다(메모리 부족으로 설치 실패 시 --no-cache-dir 추가).
 
 ```
 (venv) PS C:\Users\login_id> pip install torch==2.0.1+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
@@ -276,6 +276,8 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 ```
 
 참고로, 그동안 테스트할 때 stable-ts는 주로 2.6.2를 사용 중(최신은 2.9.0)인데, 아래 명령을 통해 특정 버전을 설치할 수 있을 것입니다.(https://pypi.org/project/stable-ts/2.6.2/)  (예: small / cuda 모델의 경우 한국어 인식에서는 2.6.2가 잘되었습니다. 2.9.0에서는 한국어가 다 깨져서 나오는데 좀 더 살펴보아야겠습니다.) 
+
+다만, stable-ts를 2.6.2로 설치하면 whisper도 버전이 고정되므로 torch 2.1.0과 같이 설치할 수 없었습니다. 
 
 ```
 pip install stable-ts==2.6.2
