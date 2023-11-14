@@ -261,12 +261,12 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 ```
 
 
-이 상태에서 향후 필요한 패키지들을 설치합니다. 아래의 git+ 명령을 쓰려면 https://git-scm.com/download/win 의 설치가  필요합니다. 아래 명령은 항상 최신 버전을 설치하게 해줍니다. 
+이 상태에서 향후 필요한 패키지들을 설치합니다. 
 
 ```
-(venv) PS C:\Users\login_id> pip install git+https://github.com/openai/whisper.git
-(venv) PS C:\Users\login_id> pip install -U git+https://github.com/jianfch/stable-ts.git
-(venv) PS C:\Users\login_id> pip install google-cloud-translate
+(venv) PS C:\Users\login_id> pip install -U openai-whisper 
+(venv) PS C:\Users\login_id> pip install -U stable-ts 
+(venv) PS C:\Users\login_id> pip install -U google-cloud-translate
 ```
 
 혹은 같이 첨부된 requirements.txt를 이용할 수도 있습니다. 
@@ -275,9 +275,7 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 (venv) PS C:\Users\login_id> pip install -r requirements.txt 
 ```
 
-참고로, 그동안 테스트할 때 stable-ts는 주로 2.6.2를 사용 중(최신은 2.9.0)인데, 아래 명령을 통해 특정 버전을 설치할 수 있을 것입니다.(https://pypi.org/project/stable-ts/2.6.2/)  (예: small / cuda 모델의 경우 한국어 인식에서는 2.6.2가 잘되었습니다. 2.9.0에서는 한국어가 다 깨져서 나오는데 좀 더 살펴보아야겠습니다.) 
-
-다만, stable-ts를 2.6.2로 설치하면 whisper도 버전이 고정되므로 torch 2.1.0과 같이 설치할 수 없었습니다. 
+참고로, 그동안 테스트할 때 stable-ts는 주로 2.6.2를 사용 했었는데, 계속 업그레이드가 이루어지고 있으므로 최신 버전을 설치하고 결과가 만족스럽지 않을 때에 특정 버전으로 바꾸어 설치하는 방법도 고려해 볼 수 있습니다.  
 
 ```
 pip install stable-ts==2.6.2
