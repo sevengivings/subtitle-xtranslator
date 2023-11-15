@@ -55,8 +55,8 @@ interface = gr.Interface(
         gr.Textbox(label="logs"), 
         gr.File(label="Download Subtitles"),
     ],
-    title="Subtitle XTranslator",
-    description="Extracts subtitles and translates .srt using subtitle-xtranslator.py.",
+    title="Subtitle XTranslator WebUI preliminary version",
+    description="Extracts subtitles and translates .srt using subtitle-xtranslator.py(On Windows, ffmpeg.exe is required)",
 )
 
 if __name__ == "__main__":
