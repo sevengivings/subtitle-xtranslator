@@ -2,12 +2,11 @@
 
 # Requires:
 # - stable-ts (https://github.com/jianfch/stable-ts) (pip install stable-ts)
-# - whisper (https://github.com/openai/whisper) (pip install git+https://github.com/openai/whisper.git )
+# - whisper (https://github.com/openai/whisper) (pip install -U openai-whisper )
 # - faster_whisper (https://github.com/guillaumekln/faster-whisper) (pip install faster-whisper)
 # - torch + cuda for stable-ts and whisper 
 # - cuDNN and cuBLAS for faster_whisper (cuDNN and pip install nvidia-cublas-cu12)
 # - ffmpeg.exe (https://www.ffmpeg.org/) for stable-ts and whisper 
-# - python-docx
 # - google-cloud-translate for ADC credential
 # - deepl
 
@@ -20,7 +19,6 @@ import torch
 import stable_whisper
 import whisper 
 from whisper.utils import get_writer
-# from faster_whisper import WhisperModel
 import numpy as np
 import gettext
 import requests 
@@ -478,6 +476,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip_textlength", type=int, default=1, help="skip short text in the subtitles, useful for removing meaningless words")
     parser.add_argument("--translator", default="none", help="none, google, papago, deepl-api or deepl-rapidapi")
     parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
+    parser.add_argument("--overwrite", action='store_true', help="if .srt already exists, overwrite")
 
     parser.add_argument("--condition_on_previous_text", action='store_true',
                         help="if True, provide the previous output of the model as a prompt for the next window; "
@@ -517,6 +516,9 @@ if __name__ == "__main__":
     vad_threshold: float = args.pop("vad_threshold")
     is_mel_first: bool = args.pop("mel_first")
 
+    # overwrite existing .srt 
+    overwrite: bool = args.pop("overwrite")
+
     print("subtitle-xtranslator: AI subtitle extraction and translation tool")
     print("\nframework:" + framework + "\nmodel:" + model_name + "\ndevice:" + device  + "\naudio language:" + audio_language + "\nsubtitle language:" + subtitle_language  + "\nigonore n characters:" + str(skip_textlength) + "\ntranslator:" + translator + "\ntext_split_size:" + str(text_split_size))
     print("\nPython version: " + sys.version)
@@ -550,7 +552,7 @@ if __name__ == "__main__":
 
         # AI speech recognition  
         # Check if the file exists
-        if not os.path.exists(output_file_name + ".srt"):           
+        if not os.path.exists(output_file_name + ".srt") or overwrite:           
             if framework == "stable-ts":   
                 extract_audio_stable_whisper(model, use_condition_on_previous_text, use_demucs, use_vad, vad_threshold, is_mel_first, audio_language, input_file_name, output_file_name)
             elif framework == "whisper":
