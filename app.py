@@ -93,7 +93,7 @@ def subtitle_xtranslator(framework, model, device, audio_language, subtitle_lang
 
 with gr.Blocks() as demo:
     # Create a Gradio interface for the subtitle_xtranslator function.
-    gr.Markdown("### WebUI for subtitle-extractor.py v20231117")
+    gr.Markdown("### WebUI for subtitle-xtranslator.py v20231117")
     with gr.Row():
         framework = gr.Dropdown(
             ["stable-ts", "whisper", "faster-whisper"], label="framework", value="stable-ts")
@@ -112,7 +112,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         translator_api_key = gr.Textbox(
             label="translator_api_key", placeholder="your translator api key")
-        processing_btn = gr.Button("Transcribe and translate(be patient for progress bar update)")
+        processing_btn = gr.Button("Transcribe and translate(be patient for progress bar update - works on Linux only)")
     with gr.Row():
         subtitles = gr.Textbox(label="Subtitles")
         logs = gr.Textbox(label="logs")
