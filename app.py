@@ -2,14 +2,14 @@ import gradio as gr
 import os
 import sys
 import datetime
-import time 
 import json
-from subprocess import PIPE, Popen, check_output
+import asyncio 
+import subprocess 
 
 # get video length, ffprobe.exe is required 
 def get_video_length(video_file):
   try: 
-    out = check_output(["ffprobe", "-v", "quiet", "-show_format", "-print_format", "json", video_file])
+    out = subprocess.check_output(["ffprobe", "-v", "quiet", "-show_format", "-print_format", "json", video_file])
     ffprobe_data = json.loads(out)
     duration_seconds = float(ffprobe_data["format"]["duration"])
   except:
@@ -17,7 +17,7 @@ def get_video_length(video_file):
 
   return int(duration_seconds)
 
-def subtitle_xtranslator(framework, model, device, audio_language, subtitle_language, skip_textlength, translator, translator_api_key, audio_file, progress=gr.Progress()):
+async def subtitle_xtranslator(framework, model, device, audio_language, subtitle_language, skip_textlength, translator, translator_api_key, audio_file, progress=gr.Progress()):
     os.environ["DEEPL_API_KEY"] = translator_api_key
     os.environ['PYTHONIOENCODING'] = 'utf-8'
     
@@ -35,12 +35,10 @@ def subtitle_xtranslator(framework, model, device, audio_language, subtitle_lang
     else: 
         progress(0, desc="Starting...")
     
-    command = sys.executable + f' subtitle-xtranslator.py --framework {framework} --model {model} --device {device} --audio_language {audio_language} --subtitle_language {subtitle_language} --skip_textlength {skip_textlength} --translator {translator} --overwrite {audio_file_name}'    
+    # {sys.executable} not working on Colab 
+    command = f'python subtitle-xtranslator.py --framework {framework} --model {model} --device {device} --audio_language {audio_language} --subtitle_language {subtitle_language} --skip_textlength {skip_textlength} --translator {translator} --overwrite {audio_file_name}'    
     
-    proc = Popen(command, stdout=PIPE, shell=True, bufsize=1, encoding='utf-8', universal_newlines=False)
-    
-    if sys.platform == "linux": 
-        os.set_blocking(proc.stdout.fileno(), False)
+    proc = await asyncio.create_subprocess_shell(command, stdout=asyncio.subprocess.PIPE)
     
     subtitle = ""
     logs = ""
@@ -51,11 +49,12 @@ def subtitle_xtranslator(framework, model, device, audio_language, subtitle_lang
     video_seconds_processed = 0 
     
     while True: 
-        line = proc.stdout.readline() 
-        if line == "": 
-            continue 
-        
-        print(line.strip())
+        line = await proc.stdout.readline() 
+        if not line:
+            break 
+
+        line = str(line, encoding='utf-8')
+        print('>' + line.strip())
         if line.startswith("[Info] Processed: "):
             # extract file name without extension from audio_file, and add '.srt'
             subtitle_file = audio_file[file_index].rsplit(".", 1)[0] + '.srt'
@@ -71,7 +70,7 @@ def subtitle_xtranslator(framework, model, device, audio_language, subtitle_lang
             
             file_index += 1 
             if file_index == file_count:
-                return subtitle, logs, download_link
+                break
         else:
             logs_list.append(line)
             
@@ -87,13 +86,14 @@ def subtitle_xtranslator(framework, model, device, audio_language, subtitle_lang
                 # get video length from video_length list
                 if video_length[file_index] != -1 and video_seconds > 0:
                     progress((video_seconds + video_seconds_processed)/ total_video_length, desc=f"processing {os.path.basename(audio_file[file_index])}") # not working 
-                    time.sleep(0.01)            
-            
-    proc.terminate() 
+    
+    await proc.wait()        
+    
+    return subtitle, logs, download_link    
 
 with gr.Blocks() as demo:
     # Create a Gradio interface for the subtitle_xtranslator function.
-    gr.Markdown("### WebUI for subtitle-xtranslator.py v20231117")
+    gr.Markdown("### WebUI for subtitle-xtranslator.py v20231117a")
     with gr.Row():
         framework = gr.Dropdown(
             ["stable-ts", "whisper", "faster-whisper"], label="framework", value="stable-ts")
@@ -112,14 +112,13 @@ with gr.Blocks() as demo:
     with gr.Row():
         translator_api_key = gr.Textbox(
             label="translator_api_key", placeholder="your translator api key")
-        processing_btn = gr.Button("Transcribe and translate(be patient for progress bar update - works on Linux only)")
+        processing_btn = gr.Button("Transcribe and translate(Please be patient for progress bar update)")
     with gr.Row():
         subtitles = gr.Textbox(label="Subtitles")
         logs = gr.Textbox(label="logs")
 
     processing_btn.click(subtitle_xtranslator, inputs=[framework, model, device, audio_language, subtitle_language,
-                         skip_textlength, translator, translator_api_key, audio_file], outputs=[subtitles, logs, subtitle_file],
-                         scroll_to_output=True)
+                         skip_textlength, translator, translator_api_key, audio_file], outputs=[subtitles, logs, subtitle_file])
 
 if __name__ == "__main__":
     if sys.platform == "win32": 
