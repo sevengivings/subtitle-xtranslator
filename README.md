@@ -12,6 +12,8 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 ## [최신 버전업 내용]
 - 2023-11-17 app.py의 웹 화면 구성을 변경하고, 여러 개의 MP3를 처리할 수 있게 하였습니다. 20231117a 버전은 윈도우11, WSL Ubuntu, Colab에서 테스트 했습니다. 다만, Colab에서는 처음 한번만 정상 작동해서 "런타임 다시 시작"을 한 후 다시 !python app.py를 해줘야 합니다. 
 
+![161156](https://github.com/sevengivings/subtitle-xtranslator/assets/2328500/8706496d-c522-4be5-871e-d49bea4bae33)
+
 - 2023-11-12 아래 WebUI(Gradio.app)로 만든 app.py는 Colab에서도 테스트 해 볼 수 있습니다. 진행 과정을 실시간으로 보여주는 기능은 작업 중입니다... 
 
 - 2023-11-11 WebUI를 위한 아주 기초적인 앱을 만들어 보았습니다. 명령프롬프트나 파워쉘에서 venv 환경을 실행(activate.bat or activate.ps1)한 상태에서 pip install gradio를 한번 해준 후 python app.py를 실행하고 링크를 Ctrl 누른 채로 마우스 클릭해주시면 됩니다. 임시 폴더로 mp4를 복사하여 작업하게 되어 있어 오래 걸리므로 ffmpeg -i .\input.mp4 -vn -ab 128k .\output.mp3 를 통해 mp3로 만들어 준 후 작업하는 것이 좋겠습니다. 
