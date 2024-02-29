@@ -170,7 +170,7 @@ To run faster-whisper, you need to install some packages.
 After the above steps, you should be able to use it right away, but it seems to install the CPU version of PyTorch. This time, install the GPU version of the torch.
 
 ```
-(venv) PS C:\Users\login_id> pip install torch==2.0.1+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+(venv) PS C:\Users\login_id> pip install torch==2.2.1+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
 ```
 
 To verify that it is installed well, type in Python and write a simple program. (Note that "version" has two underbars to the left and right of the letter.
@@ -181,7 +181,7 @@ Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import torch
 >>> print(torch.__version__)
-2.0.1+cu118
+2.2.1+cu121
 >>> exit()
 ```
 
