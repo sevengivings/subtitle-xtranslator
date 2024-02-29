@@ -233,7 +233,7 @@ PS C:\WINDOWS\system32> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 GPU버전의 토치를 설치합니다(메모리 부족으로 설치 실패 시 --no-cache-dir 추가).
 
 ```
-(venv) PS C:\Users\login_id> pip install torch==2.0.1+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+(venv) PS C:\Users\login_id> pip install torch==2.2.1+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
 ```
 
 잘 설치가 되었는 지 확인하기 위해 python을 입력하고 간단한 프로그램을 짭니다. (주의) "version" 은 글자의 좌우에 언더바가 2개씩 있습니다.
@@ -244,7 +244,7 @@ Python 3.11.4 [MSC v.1929 64 bit (AMD64)] on win32
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import torch
 >>> print(torch.__version__)
-2.0.1+cu118
+2.2.1+cu121
 >>> exit()
 ```
 
