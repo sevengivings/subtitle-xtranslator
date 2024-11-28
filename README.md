@@ -10,6 +10,9 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
 ## [최신 버전업 내용]
+
+- 2024-11-29 만약 실행 중에 NumPy 2.0이라서 안된다는 오류가 나오면, pip uninstall numpy 및 pip install "numpy<2.0" 를 통해 해결할 수 있습니다. 
+
 - 2023-11-17 app.py의 웹 화면 구성을 변경하고, 여러 개의 MP3를 처리할 수 있게 하였습니다. 20231117a 버전은 윈도우11, WSL Ubuntu, Colab에서 테스트 했습니다. 다만, Colab에서는 처음 한번만 정상 작동해서 "런타임 다시 시작"을 한 후 다시 !python app.py를 해줘야 합니다. 
 
 ![161156](https://github.com/sevengivings/subtitle-xtranslator/assets/2328500/8706496d-c522-4be5-871e-d49bea4bae33)
