@@ -69,7 +69,7 @@ options:
   -h, --help            show this help message and exit
   --framework FRAMEWORK
                         name of the stable-ts, whisper or faster-whisper framework to use (default: stable-ts)
-  --model MODEL         tiny, base, small, medium, large model to use (default: medium)
+  --model MODEL         tiny, base, small, medium, large-v2, large-v3 model to use (default: medium)
   --device DEVICE       device to use for PyTorch inference (default: cuda)
   --audio_language AUDIO_LANGUAGE
                         language spoken in the audio, specify None to perform language detection (default: ja)

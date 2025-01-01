@@ -431,7 +431,7 @@ if __name__ == "__main__":
     parser= argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("audio", nargs="+", type=str, help="audio/video file(s) to transcribe")
     parser.add_argument("--framework", default="stable-ts", help="name of the stable-ts, whisper or faster-whisper framework to use")
-    parser.add_argument("--model", default="medium", help="tiny, base, small, medium, large model to use")
+    parser.add_argument("--model", default="medium", help="tiny, base, small, medium, large-v2, large-v3 model to use")
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu", help="device to use for PyTorch inference")
     parser.add_argument("--audio_language", type=str, default="ja", help="language spoken in the audio, specify None to perform language detection")
     parser.add_argument("--subtitle_language", type=str, default="ko", help="subtitle target language")
