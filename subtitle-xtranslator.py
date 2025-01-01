@@ -1,16 +1,4 @@
-# Extract subtitle from video(stable-ts, whisper or faster_whisper) and translate subtitle(google, papago or DeepL-Rapidapi) 
-
-# Requires:
-# - stable-ts (https://github.com/jianfch/stable-ts) (pip install stable-ts)
-# - whisper (https://github.com/openai/whisper) (pip install -U openai-whisper )
-# - faster_whisper (https://github.com/guillaumekln/faster-whisper) (pip install faster-whisper)
-# - torch + cuda for stable-ts and whisper 
-# - cuDNN and cuBLAS for faster_whisper (cuDNN and pip install nvidia-cublas-cu12)
-# - ffmpeg.exe (https://www.ffmpeg.org/) for stable-ts and whisper 
-# - google-cloud-translate for ADC credential
-# - deepl
-
-# OS: Windows 10/11 
+# Extract subtitle from video/audio(stable-ts, whisper or faster_whisper) and translate subtitle(google, papago or DeepL) 
 
 import os 
 import sys
@@ -24,6 +12,7 @@ import gettext
 import requests 
 import urllib.request
 import json
+import re
 
 # stable-ts  
 def extract_audio_stable_whisper(model, condition_on_previous_text, stable_demucs, stable_vad, vad_threshold, stable_mel_first, audio_language, input_file_name, output_file_name): 
@@ -81,7 +70,9 @@ def process_faster_whisper(segments, info, language_name):
     all_text = ""
 
     for segment in segments:
-        start, end, text = segment.start, segment.end, segment.text
+        start = getattr(segment, "start", 0)
+        end = getattr(segment, "end", 0)
+        text = getattr(segment, "text", "")
         all_text += segment.text
 
         text = segment.text
@@ -93,6 +84,7 @@ def process_faster_whisper(segments, info, language_name):
             segment_dict["words"] = [word._asdict() for word in segment.words]
 
         list_segments.append(segment_dict)
+        
         duration = segment.end - last_pos
         increment = (
             duration
@@ -117,11 +109,13 @@ def extract_audio_faster_whisper(model, condition_on_previous_text, audio_langua
 
     print(f'condition_on_previous_text: {condition_on_previous_text}')
           
-    segments, info = model.transcribe(input_file_name, word_timestamps=False, condition_on_previous_text=condition_on_previous_text, language=audio_language)
+    segments, info = model.transcribe(input_file_name, word_timestamps=True, condition_on_previous_text=condition_on_previous_text, language=audio_language)
     result = process_faster_whisper(segments, info, audio_language)
     output_dir = os.path.dirname(input_file_name)
     writer = get_writer("srt", output_dir)
-    writer(result, input_file_name) 
+
+    # while saving words in result.segments, NoneType Error occurs, so use word_timestamps=True 
+    writer(result, input_file_name)
 
 # https://cloud.google.com/translate/docs/basic/translating-text?hl=ko#translate_translate_text-python
 # This script is used to translate subtitles using Google Cloud Translate service 
@@ -226,50 +220,6 @@ def translate_text_papago(audio, target, text):
     else:
         print(_("[Error] Request failed with status code:") + rescode)
 
-# https://rapidapi.com/splintPRO/api/dpl-translator
-# free: 100 calls per month, 3000 characters per call, 300,000 characters per month 
-# PowerShell 
-# Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key"
-def translate_text_deepl_rapidapi(audio, target, text):
-    try:
-        api_key = os.environ['DEEPL_RAPIDAPI_KEY'] 
-        print(_("[Info] DeepL-Rapidapi will be used."))
-    except KeyError:
-        print(_("[Error] Please set DEEPL_RAPIDAPI_KEY environment variables."))
-        sys.exit(1)
-        
-    url = f'https://dpl-translator.p.rapidapi.com/translate'
-
-    text = text
-    target_language = target.upper() 
-    source_language = audio.upper() 
-
-    payload = {
-        'text': text,
-        'source': source_language,
-        'target': target_language
-    }
-    
-    headers = {
-        "content-type": "application/json",
-        "X-RapidAPI-Key": api_key,
-        "X-RapidAPI-Host": "dpl-translator.p.rapidapi.com"
-    }   
-
-    response = requests.post(url, json=payload, headers=headers)
-    if response.status_code != 200:
-        raise Exception(response.text)
-    
-    data = response.json()
-    try:
-        translated_texts = data['text'] 
-        translated_list = translated_texts.split('\n')
-    except KeyError:
-        print(data)
-        sys.exit(1)
-    
-    return translated_list
-
 # for DeepL API translation, check if DEEPL_API_KEY is set in environment variables.
 # How to set DeepL API key in PowerShell : Set-Item -Path env:DEEPL_API_KEY -Value "your-id"
 # How to remove DeepL API key in PowerShell : Remove-Item -Path env:DEEPL_API_KEY
@@ -299,7 +249,7 @@ def translate_text_deepl_api(deepl_api_key, subtitle_language, split_list):
     result = translator.translate_text(split_list, target_lang=subtitle_language.upper())
 
     return result 
-
+    
 # removes unnecessary short and repeated characters from the subtitle text and translate using Google Cloud Translate 
 def translate_file(audio_language, subtitle_language, translator, text_split_size, input_file_name, skip_textlength):
     # Check if the file exists.
@@ -335,8 +285,9 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
 
         # Otherwise, the line is subtitle text.
         else:
-            # ignore short text under n characters
-            if len(line.strip()) > skip_textlength and time_sync_data.find('-->') != -1:
+            # ignore short text under n characters, and meaningless repeated text
+            if len(line.strip()) > skip_textlength \
+              and time_sync_data.find('-->') != -1:
                 # Add the line of text to the dictionary.
                 value = subtitle_text.get(time_sync_data, "")
                 if value is None or value == "":
@@ -355,7 +306,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                     time_sync_data_list.append(time_sync_data)              
             else: 
                 deleted_line = deleted_line + 1
-                deleted_subtitle_text.add(line.strip())
+                deleted_subtitle_text.add(time_sync_data + ":" + line.strip())
                 
     # split lists into small lists 
     current_length = 0
@@ -403,10 +354,6 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
             # print(string)        
             result = translate_text_papago(audio_language, subtitle_language, string)   
             translated_list = result          
-        elif translator == "deepl-rapidapi":
-            string = '\n'.join(split_list)       
-            result = translate_text_deepl_rapidapi(audio_language, subtitle_language, string)   
-            translated_list = result  
         elif translator == "deepl-api":
             deepl_api_key = ""
             try: 
@@ -433,9 +380,22 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                 
         with open(output_file_name + "_translated.srt", "a", encoding="utf-8") as fout:       
             for string in translated_list: 
+                # remove meaningless repeated text
+                match = re.search(r"(\b[\w\u00C0-\uFFFF]+\b)([,\.\;\s]+\1)+" , string)
+                if match:
+                    repeated_text = match.group(1)  # repeated text
+                    total_occurrences = string.count(repeated_text)  # total occurrences of the repeated text 
+                    if total_occurrences > 10:
+                        print(f"over 10 times repeated pattern in one line removed: {time_sync_data_list[i]} {match.group()}")
+                        deleted_line = deleted_line + 1
+                        deleted_subtitle_text.add(time_sync_data_list[i] + ':' + string)
+                        i += 1
+                        continue
+
                 fout.write(f"{i}\n")
                 fout.write(f"{time_sync_data_list[i]}\n")
                 fout.write(f"{string.strip()}\n")
+
                 if i != len(time_sync_data_list)-1:
                     fout.write("\n")     
                 i += 1         
@@ -460,10 +420,12 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                 f4.write(text + "\n")
 
 if __name__ == "__main__":
+    os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
     appname = 'subtitle-xtranslator'
     localedir = './locale'
         
-    en_i18n = gettext.translation(appname, localedir, fallback=True, languages=['ko'])  # Korean default
+    en_i18n = gettext.translation(appname, localedir, fallback=True, languages=['ko'])  
     en_i18n.install()
 
     parser= argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -474,7 +436,7 @@ if __name__ == "__main__":
     parser.add_argument("--audio_language", type=str, default="ja", help="language spoken in the audio, specify None to perform language detection")
     parser.add_argument("--subtitle_language", type=str, default="ko", help="subtitle target language")
     parser.add_argument("--skip_textlength", type=int, default=1, help="skip short text in the subtitles, useful for removing meaningless words")
-    parser.add_argument("--translator", default="none", help="none, google, papago, deepl-api or deepl-rapidapi")
+    parser.add_argument("--translator", default="none", help="none, google, papago, deepl-api")
     parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
     parser.add_argument("--overwrite", action='store_true', help="if .srt already exists, overwrite")
 
@@ -519,7 +481,7 @@ if __name__ == "__main__":
     # overwrite existing .srt 
     overwrite: bool = args.pop("overwrite")
 
-    print("subtitle-xtranslator: AI subtitle extraction and translation tool")
+    print("subtitle-xtranslator: AI subtitle extraction and translation tool 2025.01.01")
     print("\nframework:" + framework + "\nmodel:" + model_name + "\ndevice:" + device  + "\naudio language:" + audio_language + "\nsubtitle language:" + subtitle_language  + "\nigonore n characters:" + str(skip_textlength) + "\ntranslator:" + translator + "\ntext_split_size:" + str(text_split_size))
     print("\nPython version: " + sys.version)
     print("Torch version: " + torch.__version__ + "\n")
@@ -537,13 +499,18 @@ if __name__ == "__main__":
                 '"pip install faster-whisper"'
             )
             sys.exit(1)
-
+        
         model = WhisperModel(model_name, device=device, compute_type="int8")
+        print("faster-whisper compute_type: int8\n")
+
     else: 
         print(_("[Error] transcribing framework shoud be stable-ts or whisper")) 
         sys.exit(1)        
         
+    import time
     for input_file_name in args.pop("audio"):
+        start_time = time.time()
+        
         if not os.path.exists(input_file_name): 
             sys.exit(_("[Error] File does not exist: ") + input_file_name)
             
@@ -580,7 +547,12 @@ if __name__ == "__main__":
         else: 
             print(_("[Info] translator is none, so exit."))
 
-        print("[Info] Processed: " + input_file_name)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(_("[Info] Processed: ") + input_file_name)
+        hours, rem = divmod(elapsed_time, 3600)
+        minutes, seconds = divmod(rem, 60)
+        print(_("[Info] Processing Time: {:0>2}:{:0>2}:{:05.2f}").format(int(hours), int(minutes), seconds))
     
     print(_("[Info] Done"))
 

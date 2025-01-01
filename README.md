@@ -1,7 +1,7 @@
 # subtitle-xtranslator
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/main/README.en.md)
 
-A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago, DeepL API and dpl-Rapidapi translation API. 
+A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago, DeepL APIs. 
 
 OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts 및 faster-whisper를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다.
 
@@ -10,6 +10,8 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
 ## [최신 버전업 내용]
+
+- 2025-01-01 faster-whisper가 자막 저장오류가 나던 것을 수정했습니다. 번역 후 하나의 자막 안에 같은 단어가 공백이나 콤마로 10개 이상 중복 표시되면 자막을 삭제하도록 했습니다. 단종된 deepl-rapidapi 관련 내용은 삭제했습니다. 
 
 - 2024-12-07 Python은 버전 3.13.1은 Whisper설치 중에 wheel 오류가 나왔습니다. 일단 3.12.3을 쓰는 것이 좋겠습니다.
 
@@ -32,7 +34,7 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 ## [기능과 특징] 
 
 - 동영상에서 자막을 만들 수 있는 stable-ts, whisper 또는 faster-whisper 지원
-- 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL 및 DeepL Rapidapi버전 번역 서비스 지원
+- 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL 및 DeepL 번역 서비스 지원
 - 의미 없는 짧은 자막이나 반복되는 자막 제거 지원
 
 ## [한계]
@@ -76,7 +78,7 @@ options:
   --skip_textlength SKIP_TEXTLENGTH
                         skip short text in the subtitles, useful for removing meaningless words (default: 1)
   --translator TRANSLATOR
-                        none, google, papago, deepl-api or deepl-rapidapi (default: none)
+                        none, google, papago, deepl-api(default: none)
   --text_split_size TEXT_SPLIT_SIZE
                         split the text into small lists to speed up the translation process (default: 1000)
   --condition_on_previous_text
@@ -105,7 +107,7 @@ options:
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google, --translator papago, --translator deepl-api, --translator deepl-rapidapi 중 하나를 사용하면 됩니다. 
+물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google, --translator papago, --translator deepl-api 중 하나를 사용하면 됩니다. 
 
 번역기를 이용하기 위하여 API 키를 제공하려면 환경 변수를 사용 합니다. 
 
@@ -142,21 +144,15 @@ DeepL API 번역을 이용하려면 최초 1회 관련 패키지를 설치해 �
 (venv) C:\Users\loginid> pip install --upgrade deepl
 ```
 
-또한 https://rapidapi.com/splintPRO/api/dpl-translator 를 통해서 간접적으로 사용할 수 있는데 응답 속도는 (해외 서버라서) 느린 편이지만 잘 작동합니다. 3천 글자를 넘길 경우 길게는 10초도 넘을 수 있습니다.  
-
-신용카드를 등록한 후, 무료로 월 100번의 호출과 300,000만자까지 지원됩니다. 1회 호출당 3천글자까지 가능합니다. 무료 계정이라고 해도 호출 회수가 100회에서 넘어가면 과금이 되므로 주의해야 합니다. 
-
-(주의: deepl-rapidapi의 경우 무료 계정은 월100번만 호출할 수 있으므로, text_split_size는 3000으로 설정 필요)
-
 ```
-(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
+(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_API_KEY -Value "your_api_key" 
 ```
 
-그러면 예를 들어 보겠습니다. --translator로는 deepl-translator를 사용하고 추출 방법은 stable-ts를 선택하는데, stable-ts의 demucs=True, vad=True, mel_first=True 옵션을 사용하고 싶다면 이렇게 하면 됩니다. 영어로 되어 있는 동영상입니다. 
+그러면 예를 들어 보겠습니다. --translator로는 deepl-api를 사용하고 추출 방법은 stable-ts를 선택하는데, stable-ts의 demucs=True, vad=True, mel_first=True 옵션을 사용하고 싶다면 이렇게 하면 됩니다. 영어로 되어 있는 동영상입니다. 
 
 ```
-(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
-(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --demucs --vad --mel_first --audio_language en --translator deepl-rapidapi --text_split_size 3000 'Y:\video_cut.mp4'
+(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_API_KEY -Value "your_api_key" 
+(venv) C:\Users\loginid> python .\subtitle-xtranslator.py --demucs --vad --mel_first --audio_language en --translator deepl-api --text_split_size 3000 'Y:\video_cut.mp4'
 ```
 
 demucs, vad, mel_first에 관하여는 stable-ts의 개발자 팁에서는 다음과 같은 이야기가 있습니다. 
@@ -187,12 +183,16 @@ https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe
 
 ### 2.CUDA 설치
 
-최신 판을 찾아서 설치합니다. 설치 완료 후 cuda가 설치되어 있는 지 확인하려면 파워쉘(Windows PowerShell 앱)을 띄우고, nvidia-smi 라고 명령을 내려 보면 알 수 있습니다.
+NVIDIA 비디오 카드의 성능을 활용하기 위해 설치합니다. 
+
+설치 완료 후 cuda가 제대로 설치되어 있는 지 확인하려면 파워쉘(Windows PowerShell 앱)을 띄우고, nvidia-smi 라고 명령을 내려 보면 알 수 있습니다.
 
 https://developer.nvidia.com/cuda-toolkit
 https://developer.download.nvidia.com/compute/cuda/12.2.1/local_installers/cuda_12.2.1_536.67_windows.exe 
 
-만약 faster-whisper를 사용하려면 cuDNN 및 cuBLAS의 설치가 필요합니다. cuDNN은 NVIDIA 개발자 계정이 필요한데, cudnn-windows-x86_64-8.9.4.25_cuda12-archive.zip의 압축을 해제 후  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2에 덮어 써주면 설치가 됩니다. cuBLAS는 아래에 venv 환경이 만들어진 후 pip install nvidia-cublas-cu12 명령을 통해 설치됩니다. 
+만약 faster-whisper를 사용하려면 cuDNN의 설치가 필수입니다. cuDNN은 https://developer.nvidia.com/cudnn-downloads 에서 받을 수 있습니다. https://developer.download.nvidia.com/compute/cudnn/9.6.0/local_installers/cudnn_9.6.0_windows.exe 를 받아서 설치합니다. 기본 설정대로 설치하면 C:\Program Files\NVIDIA\CUDNN\v9.6\bin 에 dll파일이 생깁니다. 이 파일들을 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\bin 밑으로 복사해 주세요. 
+
+faster-whisper를 위해 선택적으로 설치하는 cuBLAS는 아래에 venv 환경이 만들어진 후 pip install nvidia-cublas-cu12 명령을 통해 설치할 수 있습니다. 
 
 ### 3.파워쉘 실행
 
@@ -290,7 +290,7 @@ OSError: [WinError 126] 지정된 모듈을 찾을 수 없습니다. Error loadi
 pip install stable-ts==2.6.2
 ```
 
-만약 faster-whisper를 사용할 예정이라면, 아래 명령을 추가로 진행해 줍니다. 
+만약 faster-whisper를 사용할 예정이라면, 아래 명령을 추가로 진행해 줍니다. int8로 고정되어 있으므로 subtitle-xtranslator.py의 518번째 줄의 코드 model = WhisperModel(model_name, device=device, compute_type="int8") 에 int8로 되어 있는 부분을 fp16 등으로 수정하여 이용할 수 있습니다. 
 
 ```
 pip install nvidia-cublas-cu12

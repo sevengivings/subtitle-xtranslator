@@ -2,8 +2,9 @@
 
 set current_dir=%homedrive%%homepath%
 
+echo This script will create a Python virtual environment and install required packages.
 echo Python venv environment needs 7 ~ 8 Gigabytes.   
-echo Default installation directory is %current_dir%, if you want to change enter new path. 
+echo Default installation directory is %current_dir%, %current_dir%\venv will be created. 
 
 set /p installation_dir=Enter new directory or press Enter key: 
 
@@ -11,7 +12,7 @@ if "%installation_dir%" == "" (
     set installation_dir=%current_dir%
 )
 
-echo %installation_dir% will be used. 
+echo %installation_dir%\venv will be used. 
 pause
 
 if not exist "%installation_dir%\venv\Scripts" (
@@ -22,7 +23,7 @@ if not exist "%installation_dir%\venv\Scripts" (
 call %installation_dir%\venv\Scripts\activate.bat
 
 echo Python packages will be installed. 
-pause
+pause Ctrl-C to cancel.
 
 pip install -r requirements.txt
 

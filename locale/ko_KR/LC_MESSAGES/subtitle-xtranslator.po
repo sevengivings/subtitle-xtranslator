@@ -8,89 +8,102 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-08 13:08+0900\n"
+"POT-Creation-Date: 2025-01-01 12:17+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: ko\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: utf-8\n"
 
-#: .\subtitle-xtranslator.py:123
+#: subtitle-xtranslator.py:190
 msgid "[Info] Naver Papago will be used."
 msgstr "[정보] 네이버 파파고를 이용합니다."
 
-#: .\subtitle-xtranslator.py:125
+#: subtitle-xtranslator.py:192
 msgid ""
 "[Error] Please set NAVER_CLOUD_ID and NAVER_CLIENT_SECRET environment "
 "variables."
 msgstr "네이버 파파고 번역을 위해 환경 변수를 설정해 주세요. 파워쉘에서는 Set-Item -Path env:NAVER_CLOUD_ID -Value 'your_id_value'와 Set-Item -Path env:NAVER_CLIENT_SECRET -Value 'your_password_value'입니다."
 
-#: .\subtitle-xtranslator.py:147
+#: subtitle-xtranslator.py:216
 msgid "[Error] Request failed with status code:"
 msgstr "[오류] 번역 요청이 실패했습니다. 코드값: "
 
-#: .\subtitle-xtranslator.py:156
-msgid "[Info] DeepL-Rapidapi will be used."
-msgstr "[정보] DeepL-Rapidapi를 사용합니다."
+#: subtitle-xtranslator.py:234
+msgid "[Error] DeepL API Translation limit reached."
+msgstr "[오류] DeepL API 번역 한계에 도달했습니다"
 
-#: .\subtitle-xtranslator.py:158
-msgid "[Error] Please set DEEPL_RAPIDAPI_KEY environment variables."
-msgstr "[오류] DEEPL_RAPIDAPI_KEY 환경변수를 설정해 주세요."
-
-#: .\subtitle-xtranslator.py:197
+#: subtitle-xtranslator.py:252
 msgid "[Error] The file does not exist:"
 msgstr "[오류] 파일이 없습니다."
 
-#: .\subtitle-xtranslator.py:281
+#: subtitle-xtranslator.py:337
 msgid "[Info] Using Google Cloud Translate"
 msgstr "[정보] 구글 클라우드 번역을 사용합니다."
 
-#: .\subtitle-xtranslator.py:283
+#: subtitle-xtranslator.py:339
 msgid "[Info] Using Google Cloud Translate (ADC)"
 msgstr "[정보] ADC방식으로 인증하여 구글 번역을 이용합니다."
 
-#: .\subtitle-xtranslator.py:302
-msgid "[Info] number of sentences translated: "
-msgstr "[정보] 번역된 줄수: "
+#: subtitle-xtranslator.py:356
+msgid "[Info] Using DeepL API"
+msgstr "[정보] DeepL API 사용"
 
-#: .\subtitle-xtranslator.py:320
+#: subtitle-xtranslator.py:358
+msgid "[Error] Please set DEEPL_API_KEY environment variable."
+msgstr "[오류] DEEPL_API_KEY 환경 변수가 없으니 설정해 주세요"
+
+#: subtitle-xtranslator.py:366
+msgid "[Error] Invalid translator"
+msgstr "[오류] 번역기 설정 오류"
+
+#: subtitle-xtranslator.py:369
+msgid "[Info] number of sentences translated: "
+msgstr "[정보] 번역된 문장 수: "
+
+#: subtitle-xtranslator.py:401
 msgid ""
 "\n"
 "[Info] Number of characters: "
 msgstr "\n[정보] 문자수: "
 
-#: .\subtitle-xtranslator.py:323
+#: subtitle-xtranslator.py:404
 msgid "[Info]Number of short subtitles: "
-msgstr "[정보] 무시된 짧은 자막 종류: "
+msgstr "[정보] 짧은 자막 수: "
 
-#: .\subtitle-xtranslator.py:330
+#: subtitle-xtranslator.py:411
 msgid ""
 "\n"
 "[Info]Number of repeated subtitles: "
-msgstr "\n[정보] 무시된 반복 자막 종류: "
+msgstr "\n[정보] 반복 자막 수: "
 
-#: .\subtitle-xtranslator.py:374
+#: subtitle-xtranslator.py:498
 msgid "[Error] transcribing framework shoud be stable-ts or whisper"
 msgstr "[오류] 음성 추출 프레임워크는 stable-ts 혹은 whisper를 지원합니다."
 
-#: .\subtitle-xtranslator.py:379
+#: subtitle-xtranslator.py:503
 msgid "[Error] File does not exist: "
 msgstr "[오류] 다음 파일이 없습니다: "
 
-#: .\subtitle-xtranslator.py:392
+#: subtitle-xtranslator.py:518
 msgid "[Warning] File already exists"
 msgstr "[주의] 파일이 이미 있습니다."
 
-#: .\subtitle-xtranslator.py:403
+
+#: subtitle-xtranslator.py:534
 msgid "[Info] final srt file is saved"
 msgstr "[정보] 최종 자막이 저장되었습니다(이름 변경 완료)"
 
-#: .\subtitle-xtranslator.py:405
+#: subtitle-xtranslator.py:536
 msgid "[Info] translator is none, so exit."
 msgstr "[정보] 번역기가 설정되지 않아서 번역은 생략합니다."
 
-#: .\subtitle-xtranslator.py:407
+#: subtitle-xtranslator.py:538
+msgid "[Info] Processed: "
+msgstr "[정보] 처리된 파일: "
+
+#: subtitle-xtranslator.py:540
 msgid "[Info] Done"
 msgstr "[정보] 완료"

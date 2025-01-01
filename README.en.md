@@ -10,7 +10,7 @@ This program combines the above transcribing and translation functions.
 [Features] 
 
 - supports stable-ts(https://github.com/jianfch/stable-ts), Whisper, or faster-whisper to make subtitles from video
-- supports Google cloud translation(ADC or API KEY), Naver Papago translation, DeepL API or DpL-Rapidapi translation
+- supports Google cloud translation(ADC or API KEY), Naver Papago translation, DeepL API translation
 - supports the removal of no-meaning short subtitles or repeated subtitles
 
 [Usage] 
@@ -39,7 +39,7 @@ options:
   --skip_textlength SKIP_TEXTLENGTH
                         skip short text in the subtitles, useful for removing meaningless words (default: 1)
   --translator TRANSLATOR
-                        none, google, papago, deepl-api or deepl-rapidapi (default: none)
+                        none, google, papago, deepl-api(default: none)
   --text_split_size TEXT_SPLIT_SIZE
                         split the text into small lists to speed up the translation process (default: 1000)
   --condition_on_previous_text
@@ -89,12 +89,6 @@ For DeepL API, an environment variable is needed.
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:DEEPL_API_KEY -Value "your_api_key"
 ```
-
-For DpL-Rapidapi it is required to set an environment variable. https://rapidapi.com/splintPRO/api/dpl-translator 
-```
-(venv) C:\Users\loginid> Set-Item -Path env:DEEPL_RAPIDAPI_KEY -Value "your_api_key" 
-```
-(Caution)Although you choose the free version, if you exceed the quota(100 calls per month) payment is required. 
 
 [Prerequisites] 
 
