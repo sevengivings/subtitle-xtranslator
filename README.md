@@ -11,6 +11,9 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 
 ## [최신 버전업 내용]
 
+- 2025-02-16 subtitle-translator.py는 .SRT가 이미 있는 경우 번역만 하기 위하여 추가하였습니다. 
+  (python .\subtitle-translator.py --translator deepl-api --source ja --target ko  D:\temp\ja.srt 와 같이 활용할 수 있습니다.)
+
 - 2025-01-01 faster-whisper가 자막 저장오류가 나던 것을 수정했습니다. 번역 후 하나의 자막 안에 같은 단어가 공백이나 콤마로 10개 이상 중복 표시되면 자막을 삭제하도록 했습니다. 단종된 deepl-rapidapi 관련 내용은 삭제했습니다. 
 
 - 2024-12-07 Python은 버전 3.13.1은 Whisper설치 중에 wheel 오류가 나왔습니다. 일단 3.12.3을 쓰는 것이 좋겠습니다.
@@ -132,9 +135,7 @@ Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생
 (venv) C:\Users\loginid> Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
 ```
 
-DeepL은 직접적인 방식과 간접적인 방식이 있습니다. 
-
-직접적인 방식은 아래와 같이 키를 환경 변수로 제공하면 됩니다. 월 50만자까지 무료로 이용 가능합니다.  
+DeepL은 아래와 같이 개발자 등록한 후 받을 수 있는 API키를 환경 변수로 제공하면 됩니다. 월 50만자까지 무료로 이용 가능합니다. 명령 프롬프트에서는 set DEEPL_API_KEY=your_api_key 와 같이 환경 변수를 설정할 수 있습니다.  
 ```
 (venv) C:\Users\loginid> Set-Item -Path env:DEEPL_API_KEY -Value "your_api_key"
 ```
