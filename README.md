@@ -10,7 +10,7 @@ OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts 및 faster-whis
 ## [최신 버전업 내용]
 
 - 2025-02-16 subtitle-translator.py는 .SRT가 이미 있는 경우 번역만 하기 위하여 추가하였습니다.
-  (python .\subtitle-translator.py --translator deepl-api --source ja --target ko  D:\temp\ja.srt 와 같이 활용할 수 있습니다. 혹은 [단일 exe로 만들기] 항목을 참고하여 .exe로 만들면 좀더 편리하게 사용이 가능합니다.) 
+  (python .\subtitle-translator.py --source ja --target ko  D:\temp\ja.srt 와 같이 활용할 수 있습니다. 혹은 [단일 exe로 만들기] 항목을 참고하여 .exe로 만들면 좀더 편리하게 사용이 가능합니다.) 
 
 - 2025-01-01 faster-whisper가 자막 저장오류가 나던 것을 수정했습니다. 번역 후 하나의 자막 안에 같은 단어가 공백이나 콤마로 10개 이상 중복 표시되면 자막을 삭제하도록 했습니다. 단종된 deepl-rapidapi 관련 내용은 삭제했습니다. faster-whisper는 https://github.com/Purfview/whisper-standalone-win 이용하는 것이 좋을 것 같습니다. 추가 옵션으로 -m large-v2 --sentence -vad true --vad_method pyannote_v3 --compute_type=float16 --no_repeat_ngram_size 4 --ff_mdx_kim2 -hst 4 -bo 10 --ff_speechnorm 옵션을 사용하면 좋다고 합니다. --compute_type은 PC와 GPU환경에 맞게 int8로 바꾸거나 -m medium으로 바꾸면 됩니다. -l ja 옵션으로 일본어를 지정해 줄 수 있습니다. 
 
