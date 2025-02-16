@@ -1,128 +1,16 @@
-# Translate subtitle subtitle(Google, Naver Papago or DeepL-API)  
+# Translate subtitle (DeepL-API)  
 
 import os 
 import sys
 import argparse
-import requests 
-import urllib.request
-import json
 import re
-
-# https://cloud.google.com/translate/docs/basic/translating-text?hl=ko#translate_translate_text-python
-# This script is used to translate subtitles using Google Cloud Translate service 
-# Google ADC(Application Default Credentials) is used to authenticate the request.
-# https://cloud.google.com/docs/authentication/provide-credentials-adc#how-to 
-
-# Set up Application Default Crendentials 
-# https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev 
-# Install and initialize the gcloud CLI.
-# Create credential file: gcloud auth application-default login
-def translate_text_adc(target: str, text: str) -> dict:
-    """Translates text into the target language.
-
-    Target must be an ISO 639-1 language code.
-    See https://g.co/cloud/translate/v2/translate-reference#supported_languages
-    """
-    try:
-        from google.cloud import translate_v2 as translate
-    except ModuleNotFoundError:
-        print(
-            "Please install the Cloud client library using "
-            '"pip install google-cloud-translate==2.0.1"'
-        )
-        sys.exit(1)
-
-    translate_client = translate.Client()
-
-    if isinstance(text, bytes):
-        text = text.decode("utf-8")
-
-    # Text can also be a sequence of strings, in which case this method
-    # will return a sequence of results for each text.
-    result = translate_client.translate(text, target_language=target)
-
-    #print("Text: {}".format(result["input"]))
-    #print("Translation: {}".format(result["translatedText"]))
-    #print("Detected source language: {}".format(result["detectedSourceLanguage"]))
-
-    return result 
-
-# PowerShell 
-# Set-Item -Path env:GOOGLE_API_KEY -Value "your_api_key"
-def translate_text_apikey(target, text):
-    api_key = os.environ['GOOGLE_API_KEY'] 
-    endpoint = f'https://translation.googleapis.com/language/translate/v2'
-
-    text = text
-    target_language = target
-
-    params = {
-        'key': api_key,
-        'q': text,
-        'target': target_language
-    }
-    headers = {'Content-Length': str(len(str(params)))}
-    response = requests.post(endpoint, data=params, headers=headers)
-    if response.status_code != 200:
-        raise Exception(response.text)
-    
-    data = response.json()
-    try:
-        translated_texts = [item['translatedText'] for item in data['data']['translations']]
-    except KeyError:
-        print(data)
-        sys.exit(1)
-    
-    return translated_texts
-
-# use '\n' to seperate lines in the text 
-def translate_text_papago(audio, target, text):
-    # PowerShell 
-    # Set-Item -Path env:NAVER_CLOUD_ID -Value "your_id_value"
-    # Set-Item -Path env:NAVER_CLIENT_SECRET -Value "your_password_value"
-    try:
-        client_id = os.environ['NAVER_CLOUD_ID'] 
-        client_secret = os.environ['NAVER_CLIENT_SECRET'] 
-        print(("[Info] Naver Papago will be used."))
-    except KeyError:
-        print(("[Error] Please set NAVER_CLOUD_ID and NAVER_CLIENT_SECRET environment variables."))
-        sys.exit(1)
-        
-    encText = urllib.parse.quote(text)
-    data = "source=" + audio + "&target=" + target + "&text=" + encText   
-    url = "https://openapi.naver.com/v1/papago/n2mt"
-
-    request = urllib.request.Request(url)
-    request.add_header("X-Naver-Client-Id",client_id)
-    request.add_header("X-Naver-Client-Secret",client_secret)
-    
-    # if requests exceed quota, you will see 'urllib.error.HTTPError: HTTP Error 429: Too Many Requests'   
-    response = urllib.request.urlopen(request, data=data.encode("utf-8"))
-    rescode = response.getcode()
-    
-    if(rescode==200):
-        response_body = response.read()
-        json_data = response_body.decode('utf-8')
-        translated_text = json.loads(json_data)["message"]["result"]["translatedText"]
-        translated_list = translated_text.split('\n')
-        #print(translated_list)    
-        
-        return translated_list
-    else:
-        print(("[Error] Request failed with status code:") + rescode)
+import deepl
 
 # for DeepL API translation, check if DEEPL_API_KEY is set in environment variables.
 # How to set DeepL API key in PowerShell : Set-Item -Path env:DEEPL_API_KEY -Value "your-id"
 # How to remove DeepL API key in PowerShell : Remove-Item -Path env:DEEPL_API_KEY
+# How to set DeepL API key in Prompt : set DEEPL_API_KEY=your-id
 def translate_text_deepl_api(deepl_api_key, subtitle_language, split_list): 
-    try: 
-        import deepl
-    except ModuleNotFoundError:
-        print(
-            "Please install deepl python package by running: pip install --upgrade deepl"
-        )
-        sys.exit(1)
-
     translator = deepl.Translator(deepl_api_key)    
 
     usage = translator.get_usage()
@@ -142,7 +30,7 @@ def translate_text_deepl_api(deepl_api_key, subtitle_language, split_list):
     return result 
     
 # removes unnecessary short and repeated characters from the subtitle text and translate using Google Cloud Translate 
-def translate_file(audio_language, subtitle_language, translator, text_split_size, input_file_name, skip_textlength):
+def translate_file(audio_language, subtitle_language, text_split_size, input_file_name, skip_textlength):
     # Open the input file.
     with open(input_file_name, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -201,18 +89,14 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
     current_list = [] 
     split_lists = []
     
-    # Google Cloud Translate only supports maximum text segments : 128 
-    num_of_segments = 0 
     for string in subtitle_text_list:
-        if current_length + len(string) < text_split_size and (translator != "google" or num_of_segments < 127):
+        if current_length + len(string) < text_split_size:
             current_list.append(string)
             current_length += len(string) + 1  # 1 for string = '\n'.join(split_list)
-            num_of_segments += 1
         else:
             split_lists.append(current_list)
             current_list = [string]
             current_length = len(string)
-            num_of_segments = 0
         
         total_length += len(string)
 
@@ -222,41 +106,18 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
     # translate each splitted list 
     i = 0 
     for split_list in split_lists:
-        if translator == "google":
-            google_api_key = ""
-            try: 
-                google_api_key = os.environ['GOOGLE_API_KEY']
-                print(("[Info] Using Google Cloud Translate"))
-            except KeyError:
-                print(("[Info] Using Google Cloud Translate (ADC)"))    
-                        
-            if google_api_key != "": 
-                result = translate_text_apikey(subtitle_language, split_list)
-                translated_list = result 
-            else:
-                result = translate_text_adc(subtitle_language, split_list)
-                translated_list = [res['translatedText'] for res in result]
-        elif translator == "papago":
-            string = '\n'.join(split_list)
-            # print(string)        
-            result = translate_text_papago(audio_language, subtitle_language, string)   
-            translated_list = result          
-        elif translator == "deepl-api":
-            deepl_api_key = ""
-            try: 
-                deepl_api_key = os.environ['DEEPL_API_KEY']
-                print(("[Info] Using DeepL API"))
-            except KeyError:
-                print(("[Error] Please set DEEPL_API_KEY environment variable."))
-                sys.exit(1)
+        deepl_api_key = ""
+        try: 
+            deepl_api_key = os.environ['DEEPL_API_KEY']
+            print(("[Info] Using DeepL API"))
+        except KeyError:
+            print(("[Error] Please set DEEPL_API_KEY environment variable."))
+            sys.exit(1)
 
-            result = translate_text_deepl_api(deepl_api_key, subtitle_language, split_list)
-            translated_list = []  
-            for translation in result:
-                translated_list.append(translation.text)            
-        else: 
-            print(("[Error] Invalid translator"))
-            sys.exit(1)               
+        result = translate_text_deepl_api(deepl_api_key, subtitle_language, split_list)
+        translated_list = []  
+        for translation in result:
+            translated_list.append(translation.text)            
         
         print(("[Info] number of sentences translated: "), len(translated_list)) 
         
@@ -300,7 +161,7 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                 f3.write(text + "\n")
                 
     if len(ignored_subtitle) > 0:
-        print(("\n[Info]Number of repeated subtitles: "), ignored_line)
+        print(("\n[Info] Number of repeated subtitles: "), ignored_line)
         output_file_name = input_file_name.rsplit(".", 1)[0]
         with open(output_file_name + "_repeated.txt", "w", encoding="utf-8") as f4:
             for text in ignored_subtitle:
@@ -314,17 +175,15 @@ if __name__ == "__main__":
     parser.add_argument("--source", type=str, default="ja", help="subtitle source language")
     parser.add_argument("--target", type=str, default="ko", help="subtitle target language")
     parser.add_argument("--skip_textlength", type=int, default=1, help="skip short text in the subtitles, useful for removing meaningless words")
-    parser.add_argument("--translator", default="none", help="none, google, papago, deepl-api")
     parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
    
     args = parser.parse_args().__dict__
     audio_language: str = args.pop("source")
     subtitle_language: str = args.pop("target")
     skip_textlength: int = args.pop("skip_textlength")
-    translator: str = args.pop("translator")
     text_split_size: int = args.pop("text_split_size")
 
-    print("subtitle-translator 2025.02.16")
+    print("subtitle-translator DeepL-API 2025.02.17")
 
     for input_file_name in args.pop("subtitle"):
         print(f"\n[Info] Processing {input_file_name}")
@@ -334,7 +193,7 @@ if __name__ == "__main__":
             continue
 
         output_file_name = input_file_name.rsplit(".", 1)[0]
-        translate_file(audio_language, subtitle_language, translator, text_split_size, output_file_name + ".srt", skip_textlength)
+        translate_file(audio_language, subtitle_language, text_split_size, output_file_name + ".srt", skip_textlength)
             
         # Change the name of final srt same as video file name 
         try: 

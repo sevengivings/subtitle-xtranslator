@@ -1,20 +1,18 @@
 # subtitle-xtranslator
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/sevengivings/subtitle-xtranslator/blob/main/README.en.md)
 
-A Python script to extract text from audio/video and translate subtitle using Google Cloud, Naver Papago, DeepL APIs. 
+A Python script to extract text from audio/video and translate subtitle using Google Cloud, DeepL APIs. 
 
 OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts 및 faster-whisper를 사용하여 비디오 AI 음성 인식 및 번역 과정을 자동화하기 위한 파이썬 프로그램입니다.
-
-OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제작이 매우 편리해졌고, 구글과 네이버, DeepL은 인공지능 기반의 번역 서비스를 제공하고 있습니다.
 
 이 프로그램은 비디오로부터 자막을 만들기 위해 위의 음성인식 및 번역 기능을 결합하여 작업이 편리하도록 구성했습니다. 
 
 ## [최신 버전업 내용]
 
-- 2025-02-16 subtitle-translator.py는 .SRT가 이미 있는 경우 번역만 하기 위하여 추가하였습니다. 
-  (python .\subtitle-translator.py --translator deepl-api --source ja --target ko  D:\temp\ja.srt 와 같이 활용할 수 있습니다.)
+- 2025-02-16 subtitle-translator.py는 .SRT가 이미 있는 경우 번역만 하기 위하여 추가하였습니다.
+  (python .\subtitle-translator.py --translator deepl-api --source ja --target ko  D:\temp\ja.srt 와 같이 활용할 수 있습니다. 혹은 [단일 exe로 만들기] 항목을 참고하여 .exe로 만들면 좀더 편리하게 사용이 가능합니다.) 
 
-- 2025-01-01 faster-whisper가 자막 저장오류가 나던 것을 수정했습니다. 번역 후 하나의 자막 안에 같은 단어가 공백이나 콤마로 10개 이상 중복 표시되면 자막을 삭제하도록 했습니다. 단종된 deepl-rapidapi 관련 내용은 삭제했습니다. 
+- 2025-01-01 faster-whisper가 자막 저장오류가 나던 것을 수정했습니다. 번역 후 하나의 자막 안에 같은 단어가 공백이나 콤마로 10개 이상 중복 표시되면 자막을 삭제하도록 했습니다. 단종된 deepl-rapidapi 관련 내용은 삭제했습니다. faster-whisper는 https://github.com/Purfview/whisper-standalone-win 이용하는 것이 좋을 것 같습니다. 추가 옵션으로 -m large-v2 --sentence -vad true --vad_method pyannote_v3 --compute_type=float16 --no_repeat_ngram_size 4 --ff_mdx_kim2 -hst 4 -bo 10 --ff_speechnorm 옵션을 사용하면 좋다고 합니다. --compute_type은 PC와 GPU환경에 맞게 int8로 바꾸거나 -m medium으로 바꾸면 됩니다. -l ja 옵션으로 일본어를 지정해 줄 수 있습니다. 
 
 - 2024-12-07 Python은 버전 3.13.1은 Whisper설치 중에 wheel 오류가 나왔습니다. 일단 3.12.3을 쓰는 것이 좋겠습니다.
 
@@ -37,7 +35,7 @@ OpenAI의 최첨단 AI 범용 음성인식 기능 덕분에 동영상 자막 제
 ## [기능과 특징] 
 
 - 동영상에서 자막을 만들 수 있는 stable-ts, whisper 또는 faster-whisper 지원
-- 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역, DeepL 및 DeepL 번역 서비스 지원
+- 구글 클라우드 번역(ADC 또는 API KEY), 네이버 파파고 번역(서비스종료), DeepL 및 DeepL 번역 서비스 지원
 - 의미 없는 짧은 자막이나 반복되는 자막 제거 지원
 
 ## [한계]
@@ -110,15 +108,10 @@ options:
 (venv) C:\Users\loginid> python .\subtitle-xtranslator.py '.\inputvideo1.mp4' '.\inputvideo2.mp4' '.\inputvideo3.mp4'
 ```
 
-물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google, --translator papago, --translator deepl-api 중 하나를 사용하면 됩니다. 
+물론 추출된 자막을 한국어로 자동 번역을 하기 위해서는 --translator google나 --translator deepl-api 중 하나를 사용하면 됩니다. 
 
 번역기를 이용하기 위하여 API 키를 제공하려면 환경 변수를 사용 합니다. 
 
-파파고용 API 키 제공 방법은 다음과 같습니다. 먼저 개발자 등록을 하여 테스트 계정을 설정해야 합니다. 하루에 무료로 제공되는 번역량은 1만자입니다. 상용으로 전환할 경우 백만자당 2만원이 청구되는 것 같습니다. 
-
-```
-(venv) C:\Users\loginid> Set-Item -Path env:NAVER_CLOUD_ID -Value "your_id" 
-(venv) C:\Users\loginid> Set-Item -Path env:NAVER_CLIENT_SECRET -Value "your_password"
 ```
 
 Google의 경우 ADC(애플리케이션 기본 자격 증명 - 특수 파일 생성) 또는 API 키를 선택할 수 있으며, 다음은 API 키에 대한 설명입니다. ADC는 로컬 컴퓨터에 클라우드 사용을 위한 인증 파일을 만드는 방법이라서 API 키 유출을 걱정할 필요가 없습니다. 물론 해당 파일이 유출되면 안되겠지요... 다소 번거롭지만 소스코드에 API 키를 내장하는 것보다는 아래와 같이 환경 변수로 지정해 주는 것이 보안에 더 좋아 보입니다. 다만, 해당 세션에서만 작동하므로 컴퓨터를 껐다 켜거나 파워쉘과 venv를 다시 로딩했다면 또 해주어야 하는 번거로움은 있습니다. 
