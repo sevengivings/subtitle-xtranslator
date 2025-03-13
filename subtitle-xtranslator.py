@@ -302,8 +302,8 @@ def translate_file(audio_language, subtitle_language, translator, text_split_siz
                 else: 
                     # join multiple lines of text into one line 
                     subtitle_text[time_sync_data] = subtitle_text[time_sync_data] + ", " + line.strip()
-                    subtitle_text_list.append(subtitle_text[time_sync_data])   
-                    time_sync_data_list.append(time_sync_data)              
+                    subtitle_text_list[-1] = subtitle_text[time_sync_data]
+                    time_sync_data_list[-1] = time_sync_data              
             else: 
                 deleted_line = deleted_line + 1
                 deleted_subtitle_text.add(time_sync_data + ":" + line.strip())
