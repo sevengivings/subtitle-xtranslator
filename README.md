@@ -14,7 +14,7 @@ OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts 및 faster-whis
 
 - 2025-01-01 faster-whisper가 자막 저장오류가 나던 것을 수정했습니다. 번역 후 하나의 자막 안에 같은 단어가 공백이나 콤마로 10개 이상 중복 표시되면 자막을 삭제하도록 했습니다. 단종된 deepl-rapidapi 관련 내용은 삭제했습니다. faster-whisper는 https://github.com/Purfview/whisper-standalone-win 이용하는 것이 좋을 것 같습니다. 추가 옵션으로 -m large-v2 --sentence -vad true --vad_method pyannote_v3 --compute_type=float16 --no_repeat_ngram_size 4 --ff_mdx_kim2 -hst 4 -bo 10 --ff_speechnorm 옵션을 사용하면 좋다고 합니다. --compute_type은 PC와 GPU환경에 맞게 int8로 바꾸거나 -m medium으로 바꾸면 됩니다. -l ja 옵션으로 일본어를 지정해 줄 수 있습니다. 
 
-- 2024-12-07 Python은 버전 3.13.1은 Whisper설치 중에 wheel 오류가 나왔습니다. 일단 3.12.3을 쓰는 것이 좋겠습니다.
+- 2024-12-07 Python은 버전 3.13.1은 Whisper설치 중에 wheel 오류가 나왔습니다. 일단 3.11.9를 쓰는 것이 좋겠습니다.
 
 - 2024-11-29 만약 실행 중에 NumPy 2.0이라서 안된다는 오류가 나오면, pip uninstall numpy 및 pip install "numpy<2.0" 를 통해 해결할 수 있습니다. 
 
