@@ -109,12 +109,11 @@ def extract_audio_faster_whisper(model, condition_on_previous_text, audio_langua
 
     print(f'condition_on_previous_text: {condition_on_previous_text}')
           
-    segments, info = model.transcribe(input_file_name, word_timestamps=True, condition_on_previous_text=condition_on_previous_text, language=audio_language)
+    segments, info = model.transcribe(input_file_name, word_timestamps=False, condition_on_previous_text=condition_on_previous_text, language=audio_language)
     result = process_faster_whisper(segments, info, audio_language)
     output_dir = os.path.dirname(input_file_name)
     writer = get_writer("srt", output_dir)
 
-    # while saving words in result.segments, NoneType Error occurs, so use word_timestamps=True 
     writer(result, input_file_name)
 
 # https://cloud.google.com/translate/docs/basic/translating-text?hl=ko#translate_translate_text-python
