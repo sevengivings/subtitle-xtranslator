@@ -106,7 +106,7 @@ with gr.Blocks() as demo:
         skip_textlength = gr.Dropdown(
             ["0", "1", "2", "3"], label="skip_textlength", value="1")
         translator = gr.Dropdown(
-            ["none", "google", "deepl-api", "deepl-rapidapi"], label="translator", value="none")
+            ["none", "google", "deepl-api"], label="translator", value="none")
         audio_file = gr.File(label="Upload multple mp3", file_count="multiple")
         subtitle_file = gr.File(label="Download subtitles", file_count="multiple")
     with gr.Row():
