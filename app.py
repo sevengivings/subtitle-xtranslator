@@ -55,7 +55,7 @@ async def subtitle_xtranslator(framework, model, device, audio_language, subtitl
 
         line = str(line, encoding='utf-8')
         print('>' + line.strip())
-        if line.startswith("[Info] Processed: "):
+        if line.startswith("[Info] Processed: ") or line.startswith("[정보] 처리된 파일: "):
             # extract file name without extension from audio_file, and add '.srt'
             subtitle_file = audio_file[file_index].rsplit(".", 1)[0] + '.srt'
             # read subtitles from subtitle_file
