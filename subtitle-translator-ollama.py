@@ -40,7 +40,7 @@ def translate_text_ollama(host, port, model, source_lang, target_lang, text):
         sys.exit(1)
     
 # removes unnecessary short and repeated characters from the subtitle text and translate using Ollama
-def translate_file(audio_language, subtitle_language, input_file_name, skip_textlength, ollama_host, ollama_port, ollama_model):
+def translate_file(audio_language, subtitle_language, input_file_name, skip_textlength, ollama_host, ollama_port, ollama_model, batch_translate=False):
     # Open the input file.
     with open(input_file_name, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -99,13 +99,31 @@ def translate_file(audio_language, subtitle_language, input_file_name, skip_text
     
     print(f"[Info] Starting translation of {len(subtitle_text_list)} lines with Ollama ({ollama_model})...")
 
+    translated_batch = []
+    if batch_translate:
+        print("[Info] Batch translation mode enabled. Translating all lines at once...")
+        full_text = "\n".join(subtitle_text_list)
+        result = translate_text_ollama(ollama_host, ollama_port, ollama_model, audio_language, subtitle_language, full_text)
+        translated_batch = result.splitlines()
+        
+        if len(translated_batch) != len(subtitle_text_list):
+            print(f"[Warning] Line count mismatch: Input {len(subtitle_text_list)}, Output {len(translated_batch)}")
+            # Adjust length to match input to prevent errors
+            if len(translated_batch) > len(subtitle_text_list):
+                translated_batch = translated_batch[:len(subtitle_text_list)]
+            else:
+                while len(translated_batch) < len(subtitle_text_list):
+                    translated_batch.append("")
+
     with open(output_file_name + "_translated.srt", "w", encoding="utf-8") as fout:
         for i, string in enumerate(subtitle_text_list):
-            if (i + 1) % 10 == 0:
-                print(f"[Info] Translating line {i + 1}/{len(subtitle_text_list)}")
-            
-            translated_text = translate_text_ollama(ollama_host, ollama_port, ollama_model, audio_language, subtitle_language, string)
-            
+            if batch_translate:
+                translated_text = translated_batch[i]
+            else:
+                if (i + 1) % 10 == 0:
+                    print(f"[Info] Translating line {i + 1}/{len(subtitle_text_list)}")
+                translated_text = translate_text_ollama(ollama_host, ollama_port, ollama_model, audio_language, subtitle_language, string)
+
             # remove meaningless repeated text
             match = re.search(r"(\b[\w\u00C0-\uFFFF]+\b)([,\.\;\s]+\1)+" , translated_text)
             if match:
@@ -154,6 +172,7 @@ if __name__ == "__main__":
     parser.add_argument("--ollama_host", type=str, default="localhost", help="Ollama host IP address")
     parser.add_argument("--ollama_port", type=str, default="11434", help="Ollama port number")
     parser.add_argument("--ollama_model", type=str, default="translategemma-12b-it-GGUF:Q8_0", help="Ollama model name to use")
+    parser.add_argument("--batch_translate", action='store_true', help="Translate all lines at once")
    
     args = parser.parse_args().__dict__
     audio_language: str = args.pop("source")
@@ -162,6 +181,7 @@ if __name__ == "__main__":
     ollama_host: str = args.pop("ollama_host")
     ollama_port: str = args.pop("ollama_port")
     ollama_model: str = args.pop("ollama_model")
+    batch_translate: bool = args.pop("batch_translate")
 
     print("subtitle-translator Ollama 2025.02.17")
 
@@ -173,7 +193,7 @@ if __name__ == "__main__":
             continue
 
         output_file_name = input_file_name.rsplit(".", 1)[0]
-        translate_file(audio_language, subtitle_language, output_file_name + ".srt", skip_textlength, ollama_host, ollama_port, ollama_model)
+        translate_file(audio_language, subtitle_language, output_file_name + ".srt", skip_textlength, ollama_host, ollama_port, ollama_model, batch_translate)
             
         # Change the name of final srt same as video file name 
         try: 
