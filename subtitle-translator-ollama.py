@@ -1,5 +1,6 @@
 # Translate subtitle (Ollama TranslateGemma)  
-
+# pip install requests 
+# pip install tqdm 
 import os 
 import sys
 import argparse
@@ -191,8 +192,8 @@ if __name__ == "__main__":
     parser.add_argument("--ollama_host", type=str, default="localhost", help="Ollama host IP address")
     parser.add_argument("--ollama_port", type=str, default="11434", help="Ollama port number")
     parser.add_argument("--ollama_model", type=str, default="translategemma-12b-it-GGUF:Q8_0", help="Ollama model name to use")
-    parser.add_argument("--batch_translate", action='store_true', help="Translate all lines at once")
-    parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
+    parser.add_argument("--batch_translate", action='store_true', help="Translate all lines")
+    parser.add_argument("--text_split_size", type=int, default=300, help="split the text into small lists for batch translation")
    
     args = parser.parse_args().__dict__
     audio_language: str = args.pop("source")
