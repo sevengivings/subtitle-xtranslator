@@ -1,4 +1,6 @@
-﻿google-cloud-translate
+﻿requests 
+tqdm
+google-cloud-translate
 deepl
 gradio
 openai-whisper

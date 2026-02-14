@@ -6,6 +6,7 @@ import argparse
 import re
 import requests
 import json
+from tqdm import tqdm
 
 def translate_text_ollama(host, port, model, source_lang, target_lang, text):
     url = f"http://{host}:{port}/api/chat"
@@ -13,6 +14,7 @@ def translate_text_ollama(host, port, model, source_lang, target_lang, text):
     system_prompt = (
         f"You are a professional video subtitle translator. "
         f"Translate the following text from {source_lang} to {target_lang}. "
+        f"Ensure the translation is natural and conversational. "
         f"Do not include any introductory, concluding remarks, or notes. "
         f"Output only the translated text."
     )
@@ -40,7 +42,7 @@ def translate_text_ollama(host, port, model, source_lang, target_lang, text):
         sys.exit(1)
     
 # removes unnecessary short and repeated characters from the subtitle text and translate using Ollama
-def translate_file(audio_language, subtitle_language, input_file_name, skip_textlength, ollama_host, ollama_port, ollama_model, batch_translate=False):
+def translate_file(audio_language, subtitle_language, input_file_name, skip_textlength, ollama_host, ollama_port, ollama_model, batch_translate=False, text_split_size=1000):
     # Open the input file.
     with open(input_file_name, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -101,27 +103,44 @@ def translate_file(audio_language, subtitle_language, input_file_name, skip_text
 
     translated_batch = []
     if batch_translate:
-        print("[Info] Batch translation mode enabled. Translating all lines at once...")
-        full_text = "\n".join(subtitle_text_list)
-        result = translate_text_ollama(ollama_host, ollama_port, ollama_model, audio_language, subtitle_language, full_text)
-        translated_batch = result.splitlines()
+        print(f"[Info] Batch translation mode enabled. Split size: {text_split_size}")
         
-        if len(translated_batch) != len(subtitle_text_list):
-            print(f"[Warning] Line count mismatch: Input {len(subtitle_text_list)}, Output {len(translated_batch)}")
-            # Adjust length to match input to prevent errors
-            if len(translated_batch) > len(subtitle_text_list):
-                translated_batch = translated_batch[:len(subtitle_text_list)]
+        current_length = 0
+        current_batch = []
+        batches = []
+        
+        for string in subtitle_text_list:
+            if current_length + len(string) < text_split_size:
+                current_batch.append(string)
+                current_length += len(string) + 1
             else:
-                while len(translated_batch) < len(subtitle_text_list):
-                    translated_batch.append("")
+                batches.append(current_batch)
+                current_batch = [string]
+                current_length = len(string)
+        if current_batch:
+            batches.append(current_batch)
+
+        for batch in tqdm(batches, desc="Translating batches"):
+            full_text = "\n".join(batch)
+            result = translate_text_ollama(ollama_host, ollama_port, ollama_model, audio_language, subtitle_language, full_text)
+            batch_results = result.splitlines()
+            
+            while len(batch_results) < len(batch):
+                batch_results.append("")
+            if len(batch_results) > len(batch):
+                batch_results = batch_results[:len(batch)]
+            
+            translated_batch.extend(batch_results)
 
     with open(output_file_name + "_translated.srt", "w", encoding="utf-8") as fout:
-        for i, string in enumerate(subtitle_text_list):
+        iterator = subtitle_text_list
+        if not batch_translate:
+            iterator = tqdm(subtitle_text_list, desc="Translating lines")
+
+        for i, string in enumerate(iterator):
             if batch_translate:
                 translated_text = translated_batch[i]
             else:
-                if (i + 1) % 10 == 0:
-                    print(f"[Info] Translating line {i + 1}/{len(subtitle_text_list)}")
                 translated_text = translate_text_ollama(ollama_host, ollama_port, ollama_model, audio_language, subtitle_language, string)
 
             # remove meaningless repeated text
@@ -173,6 +192,7 @@ if __name__ == "__main__":
     parser.add_argument("--ollama_port", type=str, default="11434", help="Ollama port number")
     parser.add_argument("--ollama_model", type=str, default="translategemma-12b-it-GGUF:Q8_0", help="Ollama model name to use")
     parser.add_argument("--batch_translate", action='store_true', help="Translate all lines at once")
+    parser.add_argument("--text_split_size", type=int, default=1000, help="split the text into small lists to speed up the translation process")
    
     args = parser.parse_args().__dict__
     audio_language: str = args.pop("source")
@@ -182,6 +202,7 @@ if __name__ == "__main__":
     ollama_port: str = args.pop("ollama_port")
     ollama_model: str = args.pop("ollama_model")
     batch_translate: bool = args.pop("batch_translate")
+    text_split_size: int = args.pop("text_split_size")
 
     print("subtitle-translator Ollama 2025.02.17")
 
@@ -193,7 +214,7 @@ if __name__ == "__main__":
             continue
 
         output_file_name = input_file_name.rsplit(".", 1)[0]
-        translate_file(audio_language, subtitle_language, output_file_name + ".srt", skip_textlength, ollama_host, ollama_port, ollama_model, batch_translate)
+        translate_file(audio_language, subtitle_language, output_file_name + ".srt", skip_textlength, ollama_host, ollama_port, ollama_model, batch_translate, text_split_size)
             
         # Change the name of final srt same as video file name 
         try: 
