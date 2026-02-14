@@ -12,13 +12,24 @@ from tqdm import tqdm
 def translate_text_ollama(host, port, model, source_lang, target_lang, text):
     url = f"http://{host}:{port}/api/chat"
 
-    system_prompt = (
-        f"You are a professional video subtitle translator. "
-        f"Translate the following text from {source_lang} to {target_lang}. "
-        f"Ensure the translation is natural and conversational. "
-        f"Do not include any introductory, concluding remarks, or notes. "
-        f"Output only the translated text."
-    )
+    if '\n' in text:
+        system_prompt = (
+            f"You are a professional video subtitle translator. "
+            f"Translate the following text from {source_lang} to {target_lang}. "
+            f"The input contains lines numbered [N]. "
+            f"Translate each line separately and prefix the output with the same [N]. "
+            f"Do not merge lines. Ensure the translation is natural, but strictly maintain the original line breaks. "
+            f"Do not renumber lines. "
+            f"Output only the translated text."
+        )
+    else:
+        system_prompt = (
+            f"You are a professional video subtitle translator. "
+            f"Translate the following text from {source_lang} to {target_lang}. "
+            f"Ensure the translation is natural and conversational. "
+            f"Do not include any introductory, concluding remarks, or notes. "
+            f"Output only the translated text."
+        )
 
     payload = {
         "model": model,
@@ -102,7 +113,7 @@ def translate_file(audio_language, subtitle_language, input_file_name, skip_text
     
     print(f"[Info] Starting translation of {len(subtitle_text_list)} lines with Ollama ({ollama_model})...")
 
-    translated_batch = []
+    translated_batch = [""] * len(subtitle_text_list)
     if batch_translate:
         print(f"[Info] Batch translation mode enabled. Split size: {text_split_size}")
         
@@ -110,28 +121,47 @@ def translate_file(audio_language, subtitle_language, input_file_name, skip_text
         current_batch = []
         batches = []
         
-        for string in subtitle_text_list:
+        for i, string in enumerate(subtitle_text_list):
             if current_length + len(string) < text_split_size:
-                current_batch.append(string)
+                current_batch.append((i, string))
                 current_length += len(string) + 1
             else:
                 batches.append(current_batch)
-                current_batch = [string]
+                current_batch = [(i, string)]
                 current_length = len(string)
         if current_batch:
             batches.append(current_batch)
 
         for batch in tqdm(batches, desc="Translating batches"):
-            full_text = "\n".join(batch)
+            batch_indices = {i for i, _ in batch}
+            numbered_batch = [f"[{i+1}] {line}" for i, line in batch]
+            full_text = "\n".join(numbered_batch)
             result = translate_text_ollama(ollama_host, ollama_port, ollama_model, audio_language, subtitle_language, full_text)
-            batch_results = result.splitlines()
             
-            while len(batch_results) < len(batch):
-                batch_results.append("")
-            if len(batch_results) > len(batch):
-                batch_results = batch_results[:len(batch)]
+            current_original_index = -1
             
-            translated_batch.extend(batch_results)
+            for line in result.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                
+                # Match line number like [1], 1., 1
+                match = re.match(r'^\[?(\d+)\]?[\.\s]*(.*)', line)
+                if match:
+                    line_num = int(match.group(1))
+                    text = match.group(2).strip()
+                    original_index = line_num - 1
+                    if original_index in batch_indices:
+                        translated_batch[original_index] = text
+                        current_original_index = original_index
+                    else:
+                        current_original_index = -1
+                elif current_original_index != -1:
+                    # Append to current line if it's a continuation
+                    if translated_batch[current_original_index]:
+                        translated_batch[current_original_index] += " " + line
+                    else:
+                        translated_batch[current_original_index] = line
 
     with open(output_file_name + "_translated.srt", "w", encoding="utf-8") as fout:
         iterator = subtitle_text_list
