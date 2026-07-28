@@ -9,6 +9,8 @@ OpenAI의 Whisper와 자막을 위해 조금 변형한 stable-ts 및 faster-whis
 
 ## [최신 버전업 내용]
 
+- 2026-07-28 subtitle-translator-ollama.py 사용법을 추가하였습니다. 이미 만들어진 .SRT 파일을 Ollama 로컬 LLM으로 번역할 수 있습니다.
+
 - 2025-02-16 subtitle-translator.py는 .SRT가 이미 있는 경우 번역만 하기 위하여 추가하였습니다.
   (python .\subtitle-translator.py --source ja --target ko  D:\temp\ja.srt 와 같이 활용할 수 있습니다. 혹은 [단일 exe로 만들기] 항목을 참고하여 .exe로 만들면 좀더 편리하게 사용이 가능합니다.) 
 
@@ -163,6 +165,66 @@ demucs와 vad를 사용하려면 다음 패키지들도 설치하여야 합니�
 다만, demucs의 경우 동영상이 긴 경우 GPU메모리 많이 사용하며, 8GB VRAM에서는 안 될 수 있고(예: 2시간40분 MP4가 13GB VRAM을 요구), 추가 처리 시간(6~7분)을 필요로 합니다. vad도 마찬가지로 동영상을 처음부터 끝까지 탐색하므로 오래 걸립니다.  
 
 실제 stable-ts와 deepl-api를 이용하여 추출과 번역을 하는 모습을 동영상으로 담았습니다. https://www.youtube.com/watch?v=Orq6CGHw8Ag  
+
+## [Ollama 로컬 LLM으로 SRT 번역하기]
+
+subtitle-translator-ollama.py는 이미 만들어진 .srt 자막 파일을 Ollama에서 실행 중인 로컬 LLM으로 번역하는 스크립트입니다. Google Cloud나 DeepL API 키 없이 사용할 수 있지만, Ollama와 사용할 모델은 미리 준비되어 있어야 합니다.
+
+먼저 필요한 패키지를 설치합니다. requirements.txt를 설치했다면 requests와 tqdm은 이미 포함되어 있습니다.
+
+```
+(venv) C:\Users\loginid> pip install requests tqdm
+```
+
+Ollama가 설치되어 있고 기본 포트(11434)로 실행 중인지 확인합니다.
+
+```
+(venv) C:\Users\loginid> ollama list
+```
+
+기본 모델은 아래 모델입니다. 처음 사용할 때는 Ollama가 모델을 다운로드해야 하므로 시간이 걸릴 수 있습니다.
+
+```
+hf.co/mradermacher/translategemma-12b-it-GGUF:Q8_0
+```
+
+예를 들어 일본어 SRT를 한국어로 번역하려면 다음과 같이 실행합니다.
+
+```
+(venv) C:\Users\loginid> python .\subtitle-translator-ollama.py --source japanese --target korean '.\input.srt'
+```
+
+스크립트는 번역이 끝나면 원래 input.srt를 input_original.srt로 백업하고, 번역된 자막을 input.srt 이름으로 저장합니다. 같은 이름의 백업 파일이 이미 있으면 input_original_1.srt처럼 번호를 붙여 보관합니다. 처리 중 실패한 경우에는 완성되지 않은 .part 파일을 삭제하고 원본 SRT는 유지합니다.
+
+여러 파일도 한 번에 처리할 수 있습니다.
+
+```
+(venv) C:\Users\loginid> python .\subtitle-translator-ollama.py '.\episode1.srt' '.\episode2.srt' '.\episode3.srt'
+```
+
+Ollama 서버가 다른 컴퓨터에서 실행 중이면 호스트와 포트를 지정합니다.
+
+```
+(venv) C:\Users\loginid> python .\subtitle-translator-ollama.py --ollama_host 192.168.0.10 --ollama_port 11434 '.\input.srt'
+```
+
+다른 모델을 사용하려면 --ollama_model을 지정합니다. RTX 3090 24GB에서는 더 큰 번역 모델을 쓰고 싶다면 Q4 양자화 모델부터 테스트하는 것이 좋습니다.
+
+```
+(venv) C:\Users\loginid> python .\subtitle-translator-ollama.py --ollama_model 'hf.co/mradermacher/Hy-MT2-30B-A3B-GGUF:Q4_K_M' '.\input.srt'
+```
+
+한 줄씩 번역하면 안정적이지만 오래 걸릴 수 있습니다. --batch_translate를 사용하면 여러 줄을 묶어서 번역하며, --text_split_size로 한 번에 보낼 문자량을 조절합니다. 모델이 번호를 누락하거나 줄을 합치는 경우에는 스크립트가 누락된 줄을 한 줄씩 다시 시도합니다.
+
+```
+(venv) C:\Users\loginid> python .\subtitle-translator-ollama.py --batch_translate --text_split_size 300 '.\input.srt'
+```
+
+전체 옵션은 다음과 같이 확인할 수 있습니다.
+
+```
+(venv) C:\Users\loginid> python .\subtitle-translator-ollama.py -h
+```
 
 ## [윈도우10/11 기준 준비 작업]
 
